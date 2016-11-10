@@ -10,7 +10,7 @@ public class EmployeeQueries {
 
 	   private static final String URL = "jdbc:mysql://localhost/employee_list";
 	   private static final String USERNAME = "root";
-	   private static final String PASSWORD = "Frank$101";
+	   private static final String PASSWORD = "password";
 
 	   private Connection connection; // manages connection
 	   private PreparedStatement selectAllEmployees; 
