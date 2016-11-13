@@ -56,25 +56,28 @@ public class HotelQueries {
 	   } // end HotelQueries constructor
 	   
 	   // select all of the customers in the database
-	   public List< Customer> getAllCustomers()
+	   public List<Customer> getAllCustomers()
 	   {
-	      List< Customer > results = null;
+	      List<Customer> results = null;
 	      ResultSet resultSet = null;
 	      
 	      try 
 	      {
 	         // executeQuery returns ResultSet containing matching entries
 	         resultSet = selectAllCustomers.executeQuery(); 
-	         results = new ArrayList< Customer >();
+	         results = new ArrayList<Customer>();
 	         
 	         while (resultSet.next())
 	         {
 	        	   results.add(new Customer(
-	               resultSet.getInt("employeeID"),
+	               resultSet.getInt("cID"),
 	               resultSet.getString("cNAME"),
 	               resultSet.getString("email"),
 	               resultSet.getString("phone"),
 	               resultSet.getInt("num_rooms")));
+	        	   
+	        	   // print for debuging <remove later>
+	        	   System.out.println(results.get(results.size() -1 ));
 	         } 
 	      } 
 	      catch (SQLException sqlException)
@@ -156,7 +159,7 @@ public class HotelQueries {
 	         insertNewCustomer.setString(1, cName);
 	         insertNewCustomer.setString(2, email);
 	         insertNewCustomer.setString(3, phone);
-	         insertNewCustomer.setString(4, num_rooms);
+	         //insertNewCustomer.setString(4, num_rooms);
 
 	         // insert the new entry; returns # of rows updated
 	         result = insertNewCustomer.executeUpdate(); 
