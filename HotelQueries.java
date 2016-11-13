@@ -1,16 +1,13 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.ArrayList;
 
 public class HotelQueries {
 	
-	   private static final String URL = "jdbc:mysql://localhost/employee_list";
+	   private static final String URL = "jdbc:mysql://localhost/employee_list?useSSL=false";
 	   private static final String USERNAME = "root";
-	   private static final String PASSWORD = "password";
+	   private static final String PASSWORD = "norman906";
 
 	   private Connection connection; // manages connection
 	   private PreparedStatement selectAllCustomers; 
