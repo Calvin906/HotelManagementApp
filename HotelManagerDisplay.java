@@ -45,16 +45,28 @@ public class HotelManagerDisplay extends JFrame {
     public HotelManagerDisplay() {
         super("Hotel Manager");
 
+        HotelQueries hotelQueries = new HotelQueries();
+
         roomPanel = new JPanel();
+
+        rooms = new ArrayList<>();
+
+        Room room = new Room(001,"Suite", "Big room", 200);
+        rooms.add(0,room);
+
 
         //Rooms Table
         roomsTable = new JTable(new RoomsTableModel());
         roomsTable.setFillsViewportHeight(true);
+
+
+        roomPanel.add(roomsTable.getTableHeader(), BorderLayout.NORTH);
         roomPanel.add(roomsTable);
 
+
         add(roomPanel);
-        setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
-        setSize(500, 450);
+        setLayout(new GridLayout(0,2));
+        setSize(700, 600);
         setResizable(false);
 
         setVisible(true);
@@ -63,7 +75,7 @@ public class HotelManagerDisplay extends JFrame {
     class RoomsTableModel extends AbstractTableModel {
 
         //Room var
-        private String[] roomColumnNames = {"Room Number", "Type", "Description", "Price"};
+        private String[] roomColumnNames = {"Room #", "Type", "Description", "Price"};
 
         @Override
         public int getRowCount() {
@@ -71,9 +83,15 @@ public class HotelManagerDisplay extends JFrame {
         }
 
         @Override
+        public String getColumnName(int columnIndex) {
+            return roomColumnNames[columnIndex];
+        }
+
+        @Override
         public int getColumnCount() {
             return roomColumnNames.length;
         }
+
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
