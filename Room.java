@@ -1,5 +1,5 @@
 public class Room {
-    private String[] options;
+     String[] options;
     int rID;
     String type;
     String description;

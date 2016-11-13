@@ -68,7 +68,7 @@ public class HotelManagerDisplay extends JFrame {
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
-            return rooms.get(rowIndex);
+            return rooms.get(rowIndex).options[columnIndex];
         }
     }
 
