@@ -1,4 +1,5 @@
 import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 
 /**
@@ -28,8 +29,6 @@ public class HotelManagerDisplay extends JFrame {
     private JTextField emailTextField;
     private JCheckBox vipCheckbox;
 
-    //Room var
-    private ArrayList<Room> rooms;
 
     //Customer var
     private ArrayList<Customer> customers;
@@ -42,7 +41,6 @@ public class HotelManagerDisplay extends JFrame {
         super("Hotel Manager");
 
         customers = new ArrayList<>();
-        rooms = new ArrayList<>();
 
 
 
@@ -50,6 +48,28 @@ public class HotelManagerDisplay extends JFrame {
 
 
 
+    }
+
+    class RoomsTableModel extends AbstractTableModel {
+
+        //Room var
+        private ArrayList<Room> rooms = new ArrayList<>();
+        private String[] roomColumnNames = {"Room Number", "Type", "Description", "Price"};
+
+        @Override
+        public int getRowCount() {
+            return rooms.size();
+        }
+
+        @Override
+        public int getColumnCount() {
+            return roomColumnNames.length;
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            return rooms.get(rowIndex);
+        }
     }
 
     public static void main(String[] args) {
