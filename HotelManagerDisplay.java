@@ -1,11 +1,18 @@
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import java.awt.*;
 import java.util.ArrayList;
 
 /**
  * Created by Alex Preston on 11/12/16.
  */
 public class HotelManagerDisplay extends JFrame {
+
+    //Panels for GUI
+    private JPanel roomPanel;
+    private JPanel customerPanel;
+    private JPanel amenitiesPanel;
+    private JPanel billingPanel;
 
     //Fields for GUI
     private JTable roomsTable;
@@ -32,28 +39,30 @@ public class HotelManagerDisplay extends JFrame {
 
     //Customer var
     private ArrayList<Customer> customers;
-
-    //Columns for Rooms table
-    private String[] roomColumnNames = {"Room Number", "Type" , "Description ", "Price"};
+    private ArrayList<Room> rooms;
 
 
     public HotelManagerDisplay() {
         super("Hotel Manager");
 
-        customers = new ArrayList<>();
+        roomPanel = new JPanel();
 
+        //Rooms Table
+        roomsTable = new JTable(new RoomsTableModel());
+        roomsTable.setFillsViewportHeight(true);
+        roomPanel.add(roomsTable);
 
+        add(roomPanel);
+        setLayout(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        setSize(500, 450);
+        setResizable(false);
 
-
-
-
-
+        setVisible(true);
     }
 
     class RoomsTableModel extends AbstractTableModel {
 
         //Room var
-        private ArrayList<Room> rooms = new ArrayList<>();
         private String[] roomColumnNames = {"Room Number", "Type", "Description", "Price"};
 
         @Override
@@ -68,9 +77,31 @@ public class HotelManagerDisplay extends JFrame {
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
-            return rooms.get(rowIndex).options[columnIndex];
+            Object value = null;
+            switch (columnIndex) {
+
+                case(0):
+                    value = rooms.get(rowIndex).getrID();
+                    break;
+                case(1):
+                    value = rooms.get(rowIndex).getType();
+                    break;
+                case(2):
+                    value = rooms.get(rowIndex).getDescription();
+                    break;
+                case(3):
+                    value = rooms.get(rowIndex).getPrice();
+                    break;
+            }
+            return value;
+        }
+
+        public Class getColumnClass(int c) {
+            return getValueAt(0, c).getClass();
         }
     }
+
+
 
     public static void main(String[] args) {
         new HotelManagerDisplay();

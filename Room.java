@@ -1,5 +1,4 @@
 public class Room {
-     String[] options;
     int rID;
     String type;
     String description;
@@ -7,7 +6,6 @@ public class Room {
 
     public Room(int rID, String type, String description, int price) {
 
-        options = new String[]{String.valueOf(rID), type, description, String.valueOf(price)};
         this.rID = rID;
         this.type = type;
         this.description = description;
