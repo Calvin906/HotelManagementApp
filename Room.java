@@ -2,9 +2,9 @@ public class Room {
     int rID;
     String type;
     String description;
-    int price;
+    double price;
 
-    public Room(int rID, String type, String description, int price) {
+    public Room(int rID, String type, String description, double price) {
 
         this.rID = rID;
         this.type = type;
@@ -36,7 +36,7 @@ public class Room {
         description = description;
     }
 
-    public int getPrice() {
+    public double getPrice() {
         return price;
     }
 

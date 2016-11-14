@@ -25,12 +25,13 @@ public class HotelManagerDisplay extends JFrame {
     private JLabel emailLabel;
     private JLabel invoiceLabel;
     private JLabel checkoutLabel;
-    private JButton bookButton;
+    private JButton roomsBookButton;
     private JButton addCustomerButton;
     private JButton addAmenitiesButton;
     private JButton checkoutButton;
     private JScrollBar roomsScrollBar;
     private JScrollBar amenitiesScrollBar;
+    private JTextField roomNumTextField;
     private JTextField nameTextField;
     private JTextField phoneTextField;
     private JTextField emailTextField;
@@ -47,25 +48,55 @@ public class HotelManagerDisplay extends JFrame {
 
         HotelQueries hotelQueries = new HotelQueries();
 
-        roomPanel = new JPanel();
 
         rooms = new ArrayList<>();
 
-        Room room = new Room(001,"Suite", "Big room", 200);
-        rooms.add(0,room);
+        //Test
+        Room room = new Room(001, "Suite", "This room has alot of space", 200.00);
+        rooms.add(0, room);
+
+        //ROOM PANEL START
+
+        roomPanel = new JPanel();
+        roomPanel.setLayout(new BoxLayout(roomPanel, BoxLayout.PAGE_AXIS));
 
 
         //Rooms Table
         roomsTable = new JTable(new RoomsTableModel());
         roomsTable.setFillsViewportHeight(true);
-
-
+        roomsTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
         roomPanel.add(roomsTable.getTableHeader(), BorderLayout.NORTH);
         roomPanel.add(roomsTable);
 
 
+        //Rooms TextField
+        Dimension roomTextFieldDimension = new Dimension(80, 20);
+        roomNumTextField = new JTextField();
+        roomNumTextField.setMaximumSize(roomTextFieldDimension);
+        roomPanel.add(roomNumTextField);
+
+
+        //Rooms Book Button
+        roomsBookButton = new JButton();
+        roomPanel.add(roomsBookButton);
+        roomsBookButton.setText("Book");
+
+
+        //Panel for the Button and textField
+        JPanel selection = new JPanel();
+        selection.setLayout(new BoxLayout(selection, BoxLayout.LINE_AXIS));
+        selection.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
+        selection.add(roomNumTextField);
+        selection.add(Box.createRigidArea(new Dimension(10, 0)));
+        selection.add(roomsBookButton);
+
+        roomPanel.add(selection);
         add(roomPanel);
-        setLayout(new GridLayout(0,2));
+
+        //ROOM PANEL END
+
+
+        setLayout(new GridLayout(0, 2));
         setSize(700, 600);
         setResizable(false);
 
@@ -75,7 +106,7 @@ public class HotelManagerDisplay extends JFrame {
     class RoomsTableModel extends AbstractTableModel {
 
         //Room var
-        private String[] roomColumnNames = {"Room #", "Type", "Description", "Price"};
+        private String[] roomColumnNames = {"Room #", "Type", "Price", "Description"};
 
         @Override
         public int getRowCount() {
@@ -98,17 +129,17 @@ public class HotelManagerDisplay extends JFrame {
             Object value = null;
             switch (columnIndex) {
 
-                case(0):
+                case (0):
                     value = rooms.get(rowIndex).getrID();
                     break;
-                case(1):
+                case (1):
                     value = rooms.get(rowIndex).getType();
                     break;
-                case(2):
-                    value = rooms.get(rowIndex).getDescription();
-                    break;
-                case(3):
+                case (2):
                     value = rooms.get(rowIndex).getPrice();
+                    break;
+                case (3):
+                    value = rooms.get(rowIndex).getDescription();
                     break;
             }
             return value;
@@ -118,7 +149,6 @@ public class HotelManagerDisplay extends JFrame {
             return getValueAt(0, c).getClass();
         }
     }
-
 
 
     public static void main(String[] args) {
