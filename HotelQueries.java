@@ -12,9 +12,9 @@ import java.util.ArrayList;
  */
 public class HotelQueries {
 
-	private static final String URL = "jdbc:mysql://localhost/hotel";
+	private static final String URL = "jdbc:mysql://localhost/Hotel?useSSL=false";
 	private static final String USERNAME = "root";
-	private static final String PASSWORD = "password";
+	private static final String PASSWORD = "norman906";
 
 	private Connection connection; // manages connection
 

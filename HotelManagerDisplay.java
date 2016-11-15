@@ -1,6 +1,8 @@
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 /**
@@ -23,12 +25,11 @@ public class HotelManagerDisplay extends JFrame {
     private JLabel vipLabel;
     private JLabel phoneLabel;
     private JLabel emailLabel;
-    private JLabel invoiceLabel;
     private JLabel checkoutLabel;
     private JButton roomsBookButton;
     private JButton addCustomerButton;
     private JButton addAmenitiesButton;
-    private JButton checkoutButton;
+    private JButton payButton;
     private JScrollBar roomsScrollBar;
     private JScrollBar amenitiesScrollBar;
     private JTextField roomNumTextField;
@@ -41,6 +42,7 @@ public class HotelManagerDisplay extends JFrame {
     //Customer var
     private ArrayList<Customer> customers;
     private ArrayList<Room> rooms;
+    private ArrayList<Amenity> amenities;
 
 
     public HotelManagerDisplay() {
@@ -50,10 +52,13 @@ public class HotelManagerDisplay extends JFrame {
 
 
         rooms = new ArrayList<>();
+        amenities = new ArrayList<>();
 
         //Test
         Room room = new Room(001, "Suite", "This room has alot of space", 200.00);
         rooms.add(0, room);
+
+        /***********************************/
 
         //ROOM PANEL START
 
@@ -72,14 +77,14 @@ public class HotelManagerDisplay extends JFrame {
         //Rooms TextField
         Dimension roomTextFieldDimension = new Dimension(80, 20);
         roomNumTextField = new JTextField();
+        roomNumTextField.setText("Room #");
         roomNumTextField.setMaximumSize(roomTextFieldDimension);
         roomPanel.add(roomNumTextField);
 
 
         //Rooms Book Button
-        roomsBookButton = new JButton();
+        roomsBookButton = new JButton("Book");
         roomPanel.add(roomsBookButton);
-        roomsBookButton.setText("Book");
 
 
         //Panel for the Button and textField
@@ -95,12 +100,128 @@ public class HotelManagerDisplay extends JFrame {
 
         //ROOM PANEL END
 
+        /***********************************/
+
+        //CUSTOMER PANEL START
+
+        customerPanel = new JPanel();
+        //customerPanel.setLayout(new FlowLayout());
+
+        //Name Label
+        nameLabel = new JLabel("Name: ");
+        customerPanel.add(nameLabel);
+
+
+        //Name TextField
+        nameTextField = new JTextField();
+        nameTextField.setMaximumSize(new Dimension(10,20));
+        customerPanel.add(nameTextField);
+
+        //Vip Check Label
+        vipLabel = new JLabel("VIP: ");
+        customerPanel.add(vipLabel);
+
+        //Vip Checkbox
+        vipCheckbox = new JCheckBox();
+        customerPanel.add(vipCheckbox);
+
+        //Email Label
+        emailLabel = new JLabel("Email: ");
+        customerPanel.add(emailLabel);
+
+        //Email TextField
+        emailTextField = new JTextField();
+        emailTextField.setMaximumSize(new Dimension(10,20));
+        customerPanel.add(emailTextField);
+
+        //Phone Label
+        phoneLabel = new JLabel("Phone: ");
+        customerPanel.add(phoneLabel);
+
+        //Phone TextField
+        phoneTextField = new JTextField();
+        emailTextField.setMaximumSize(new Dimension(10,20));
+        customerPanel.add(phoneTextField);
+
+        //Add the button
+        addCustomerButton = new JButton("Add");
+        customerPanel.add(addCustomerButton);
+
+        add(customerPanel);
+
+        //CUSTOMER PANEL END
+
+        /***********************************/
+
+        //TAB PANEL START
+        billingPanel = new JPanel();
+
+        //Pay Button
+        payButton = new JButton("Pay");
+        billingPanel.add(payButton);
+
+        payButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+            }
+        });
+
+        //TODO Not sure how we want to do the payment option
+
+        //Payment TextField
+
+        add(billingPanel);
+
+        //TAB PANEL END
+
+        /***********************************/
+
+        //AMENITIES PANEL START
+        amenitiesPanel = new JPanel();
+
+        //JTable for Amenities
+        amenitiesTable = new JTable();
+
+
+
+
+        add(amenitiesPanel);
+
+        //AMENITIES PANEL END
+
+        /***********************************/
+
 
         setLayout(new GridLayout(0, 2));
         setSize(700, 600);
         setResizable(false);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         setVisible(true);
+    }
+
+    class AmenitiesTableModel extends AbstractTableModel {
+        private String[] amenityColumnName = {"Amenity #", };
+        @Override
+        public int getRowCount() {
+            return 0;
+        }
+
+        @Override
+        public int getColumnCount() {
+            return 0;
+        }
+
+        @Override
+        public String getColumnName(int columnIndex) {
+            return amenityColumnName[columnIndex];
+        }
+
+        @Override
+        public Object getValueAt(int rowIndex, int columnIndex) {
+            return null;
+        }
     }
 
     class RoomsTableModel extends AbstractTableModel {
