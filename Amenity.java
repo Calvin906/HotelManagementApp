@@ -1,5 +1,5 @@
 /**
- * Created by Wags on 11/15/16.
+ * Created by Alex Preston on 11/15/16.
  */
 public class Amenity {
     int aID;
