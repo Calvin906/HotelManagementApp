@@ -16,12 +16,18 @@ public class HotelManagerDisplay extends JFrame {
     private JPanel customerPanel;
     private JPanel amenitiesPanel;
     private JPanel billingPanel;
+    private JPanel checkoutPanel;
+    private JPanel bookRoomPanel;
+    private JPanel itemPanel;
 
     //Fields for GUI
     private JTable roomsTable;
     private JTable amenitiesTable;
     private JLabel roomsLabel;
     private JLabel amountLabel;
+    private JLabel bookRoomLabel;
+    private JLabel customerLabel;
+    private JLabel amenityLabel;
     private JLabel nameLabel;
     private JLabel vipLabel;
     private JLabel phoneLabel;
@@ -72,6 +78,15 @@ public class HotelManagerDisplay extends JFrame {
         roomPanel = new JPanel();
         roomPanel.setLayout(new BoxLayout(roomPanel, BoxLayout.PAGE_AXIS));
 
+        //Book Room panel Label
+        bookRoomPanel = new JPanel();
+        bookRoomPanel.setLayout(new BoxLayout(bookRoomPanel, BoxLayout.LINE_AXIS));
+
+        //Book Room label
+        bookRoomLabel = new JLabel("Book a Room");
+        bookRoomPanel.add(bookRoomLabel);
+        bookRoomPanel.setBorder(BorderFactory.createEmptyBorder(0,10,10,10));
+        roomPanel.add(bookRoomPanel);
 
         //Rooms Table
         roomsTable = new JTable(new RoomsTableModel());
@@ -118,8 +133,19 @@ public class HotelManagerDisplay extends JFrame {
 
         //CUSTOMER PANEL START
 
+        //Customer Panel
         customerPanel = new JPanel();
         customerPanel.setLayout(new BoxLayout(customerPanel, BoxLayout.PAGE_AXIS));
+
+        //Customer Label Panel
+        JPanel customerTitlePanel = new JPanel();
+        customerTitlePanel.setLayout( new BoxLayout(customerTitlePanel, BoxLayout.LINE_AXIS));
+
+        //Customer title label
+        customerLabel = new JLabel("Add Customer ");
+        customerTitlePanel.add(customerLabel);
+        customerTitlePanel.setBorder(BorderFactory.createEmptyBorder(0,10,10,10));
+        customerPanel.add(customerTitlePanel);
 
         //Name Label
         nameLabel = new JLabel("Name: ");
@@ -138,7 +164,7 @@ public class HotelManagerDisplay extends JFrame {
         customerPanel.add(namePanel);
 
         //Vip Check Label
-        vipLabel = new JLabel("VIP: ");
+        vipLabel = new JLabel("VIP:               ");
 
         //Vip Checkbox
         vipCheckbox = new JCheckBox();
@@ -184,9 +210,14 @@ public class HotelManagerDisplay extends JFrame {
         phonePanel.add(phoneTextField);
         customerPanel.add(phonePanel);
 
+        //Panel for the Button to offset Centering issue
+        JPanel customerButtonPanel = new JPanel();
+        customerButtonPanel.setLayout(new BoxLayout(customerButtonPanel, BoxLayout.LINE_AXIS));
+
         //Add the button
         addCustomerButton = new JButton("Add");
-        customerPanel.add(addCustomerButton);
+        customerButtonPanel.add(addCustomerButton);
+        customerPanel.add(customerButtonPanel);
 
         addCustomerButton.addActionListener(new ActionListener() {
             @Override
@@ -206,9 +237,14 @@ public class HotelManagerDisplay extends JFrame {
         billingPanel = new JPanel();
         billingPanel.setLayout(new BoxLayout(billingPanel, BoxLayout.PAGE_AXIS));
 
+        checkoutPanel = new JPanel();
+        checkoutPanel.setLayout(new BoxLayout(checkoutPanel, BoxLayout.LINE_AXIS));
+
         //CheckoutLabel
         checkoutLabel = new JLabel("Checkout");
-        billingPanel.add(checkoutLabel);
+        checkoutPanel.add(checkoutLabel);
+        checkoutPanel.setBorder(BorderFactory.createEmptyBorder(0,10,10,10));
+        billingPanel.add(checkoutPanel);
 
         //Pay Button
         payButton = new JButton("Pay");
@@ -231,6 +267,16 @@ public class HotelManagerDisplay extends JFrame {
         //AMENITIES PANEL START
         amenitiesPanel = new JPanel();
         amenitiesPanel.setLayout(new BoxLayout(amenitiesPanel, BoxLayout.PAGE_AXIS));
+
+        //Amenity Panel
+        itemPanel = new JPanel();
+        itemPanel.setLayout(new BoxLayout(itemPanel, BoxLayout.LINE_AXIS));
+
+        //Amenity title
+        amenityLabel = new JLabel("Add Item ");
+        itemPanel.add(amenityLabel);
+        itemPanel.setBorder(BorderFactory.createEmptyBorder(0,10,10,10));
+        amenitiesPanel.add(itemPanel);
 
         //JTable for Amenities
         amenitiesTable = new JTable(new AmenitiesTableModel());
