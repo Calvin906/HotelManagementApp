@@ -21,12 +21,13 @@ public class HotelManagerDisplay extends JFrame {
     private JTable roomsTable;
     private JTable amenitiesTable;
     private JLabel roomsLabel;
-    private JLabel amenitiesLabel;
+    private JLabel amountLabel;
     private JLabel nameLabel;
     private JLabel vipLabel;
     private JLabel phoneLabel;
     private JLabel emailLabel;
     private JLabel checkoutLabel;
+    private JLabel itemLabel;
     private JButton roomsBookButton;
     private JButton addCustomerButton;
     private JButton addAmenitiesButton;
@@ -37,6 +38,8 @@ public class HotelManagerDisplay extends JFrame {
     private JTextField nameTextField;
     private JTextField phoneTextField;
     private JTextField emailTextField;
+    private JTextField itemTextField;
+    private JTextField amountTextField;
     private JCheckBox vipCheckbox;
 
 
@@ -58,11 +61,14 @@ public class HotelManagerDisplay extends JFrame {
         //Test
         Room room = new Room(001, "Suite", "This room has alot of space", 200.00);
         rooms.add(0, room);
+        Amenity amenity = new Amenity(001, "Pizza", 20.0);
+        amenities.add(amenity);
 
         /***********************************/
 
         //ROOM PANEL START
 
+        //Room Panel
         roomPanel = new JPanel();
         roomPanel.setLayout(new BoxLayout(roomPanel, BoxLayout.PAGE_AXIS));
 
@@ -120,7 +126,7 @@ public class HotelManagerDisplay extends JFrame {
 
         //Name TextField
         nameTextField = new JTextField();
-        nameTextField.setMaximumSize(new Dimension(10,20));
+        nameTextField.setMaximumSize(new Dimension(100,20));
 
         //Panel for Name and Name TextField
         JPanel namePanel = new JPanel();
@@ -151,7 +157,7 @@ public class HotelManagerDisplay extends JFrame {
 
         //Email TextField
         emailTextField = new JTextField();
-        emailTextField.setMaximumSize(new Dimension(10,20));
+        emailTextField.setMaximumSize(new Dimension(100,20));
 
         //Email Panel
         JPanel emailPanel = new JPanel();
@@ -167,7 +173,7 @@ public class HotelManagerDisplay extends JFrame {
 
         //Phone TextField
         phoneTextField = new JTextField();
-        emailTextField.setMaximumSize(new Dimension(10,20));
+        phoneTextField.setMaximumSize(new Dimension(100,20));
 
         //Phone Panel
         JPanel phonePanel = new JPanel();
@@ -198,11 +204,15 @@ public class HotelManagerDisplay extends JFrame {
 
         //TAB PANEL START
         billingPanel = new JPanel();
+        billingPanel.setLayout(new BoxLayout(billingPanel, BoxLayout.PAGE_AXIS));
+
+        //CheckoutLabel
+        checkoutLabel = new JLabel("Checkout");
+        billingPanel.add(checkoutLabel);
 
         //Pay Button
         payButton = new JButton("Pay");
-        billingPanel.add(payButton);
-
+        //billingPanel.add(payButton);
 
         payButton.addActionListener(new ActionListener() {
             @Override
@@ -211,9 +221,6 @@ public class HotelManagerDisplay extends JFrame {
             }
         });
 
-        //TODO Not sure how we want to do the payment option
-
-        //Payment TextField
 
         add(billingPanel);
 
@@ -223,6 +230,7 @@ public class HotelManagerDisplay extends JFrame {
 
         //AMENITIES PANEL START
         amenitiesPanel = new JPanel();
+        amenitiesPanel.setLayout(new BoxLayout(amenitiesPanel, BoxLayout.PAGE_AXIS));
 
         //JTable for Amenities
         amenitiesTable = new JTable(new AmenitiesTableModel());
@@ -231,7 +239,42 @@ public class HotelManagerDisplay extends JFrame {
         amenitiesPanel.add(amenitiesTable.getTableHeader(), BorderLayout.NORTH);
         amenitiesPanel.add(amenitiesTable);
 
-        
+
+        //Item Label
+        itemLabel = new JLabel("Item #: ");
+
+        //Item TextField
+        itemTextField = new JTextField();
+        itemTextField.setMaximumSize(new Dimension(50,20));
+
+        //Amount Label
+        amountLabel = new JLabel("Amount: ");
+
+        //Amount TextField
+        amountTextField = new JTextField();
+        amountTextField.setMaximumSize(new Dimension(35,20));
+
+        //Amenity add Button
+        addAmenitiesButton = new JButton("Add");
+        addAmenitiesButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //TODO
+            }
+        });
+
+        //Panel for all of actions on Amenity Panel
+        JPanel itemPanel = new JPanel();
+        itemPanel.setLayout(new BoxLayout(itemPanel, BoxLayout.LINE_AXIS));
+        itemPanel.setBorder(BorderFactory.createEmptyBorder(0,10,10,10));
+        itemPanel.add(itemLabel);
+        itemPanel.add(itemTextField);
+        itemPanel.add(amountLabel);
+        itemPanel.add(amountTextField);
+        itemPanel.add(addAmenitiesButton);
+
+        amenitiesPanel.add(itemPanel);
+
         add(amenitiesPanel);
 
         //AMENITIES PANEL END
@@ -251,7 +294,7 @@ public class HotelManagerDisplay extends JFrame {
      * Class that allows me to implement a Custom Table model instead of the default.
      */
     class AmenitiesTableModel extends AbstractTableModel {
-        private String[] amenityColumnName = {"Amenity #", };
+        private String[] amenityColumnName = {"Amenity # ", "Item ", "Price " };
         @Override
         public int getRowCount() {
             return amenities.size();
@@ -282,6 +325,10 @@ public class HotelManagerDisplay extends JFrame {
                     break;
             }
             return value;
+        }
+
+        public Class getColumnClass(int c) {
+            return getValueAt(0, c).getClass();
         }
     }
 
