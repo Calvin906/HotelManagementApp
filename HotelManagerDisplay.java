@@ -74,10 +74,6 @@ public class HotelManagerDisplay extends JFrame {
         amenities = new ArrayList<>();
 
         //Test
-        Room room = new Room(001, "Suite", "This room has alot of space", 200.00);
-        rooms.add(0, room);
-        Amenity amenity = new Amenity(001, "Pizza", 20.0);
-        amenities.add(amenity);
 
         /***********************************/
 
@@ -487,10 +483,10 @@ public class HotelManagerDisplay extends JFrame {
             switch (columnIndex) {
 
                 case (0):
-                    value = rooms.get(rowIndex).getrID();
+                    value = rooms.get(rowIndex).getRoomID();
                     break;
                 case (1):
-                    value = rooms.get(rowIndex).getType();
+                    value = rooms.get(rowIndex).getRoomType();
                     break;
                 case (2):
                     value = rooms.get(rowIndex).getPrice();
