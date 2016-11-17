@@ -1,20 +1,10 @@
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.util.List; 
-import javax.swing.JButton;
-import javax.swing.Box;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.WindowConstants;
-import javax.swing.BoxLayout;
-import javax.swing.BorderFactory;
-import javax.swing.JOptionPane;
+import java.util.List;
 
 public class EmployeeListDisplay extends JFrame{
 
@@ -116,7 +106,7 @@ public class EmployeeListDisplay extends JFrame{
 	      ); // end call to addActionListener
 
 	      navigatePanel.add(indexTextField);
-	      navigatePanel.add(Box.createHorizontalStrut(10));
+	      //navigatePanel.add(Box.createHorizontalStrut(10));
 
 	      ofLabel.setText("of");
 	      navigatePanel.add(ofLabel);

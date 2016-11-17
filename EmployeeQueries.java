@@ -8,9 +8,9 @@ import java.util.ArrayList;
 
 public class EmployeeQueries {
 
-	   private static final String URL = "jdbc:mysql://localhost/employee_list";
+	   private static final String URL = "jdbc:mysql://localhost/employee_list?useSSL=false";
 	   private static final String USERNAME = "root";
-	   private static final String PASSWORD = "password";
+	   private static final String PASSWORD = "norman906";
 
 	   private Connection connection; // manages connection
 	   private PreparedStatement selectAllEmployees; 
@@ -22,6 +22,7 @@ public class EmployeeQueries {
 	   {
 	      try 
 	      {
+			  Class.forName("com.mysql.jdbc.Driver");
 	         connection = 
 	            DriverManager.getConnection(URL, USERNAME, PASSWORD);
 
@@ -43,7 +44,9 @@ public class EmployeeQueries {
 	      {
 	         sqlException.printStackTrace();
 	         System.exit(1);
-	      }
+	      } catch (ClassNotFoundException e) {
+			  e.printStackTrace();
+		  }
 	   } // end EmployeeQueries constructor
 	   
 	   // select all of the employees in the database
