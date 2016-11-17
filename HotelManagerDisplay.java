@@ -27,6 +27,13 @@ public class HotelManagerDisplay extends JFrame {
     private JLabel amountLabel;
     private JLabel bookRoomLabel;
     private JLabel customerLabel;
+    private JLabel customerIDLabel;
+    private JLabel roomPriceLabel;
+    private JLabel amenityPriceLabel;
+    private JLabel totalLabel;
+    private JLabel roomPriceTotalLabel;
+    private JLabel amenityPriceTotalLabel;
+    private JLabel totalPriceLabel;
     private JLabel amenityLabel;
     private JLabel nameLabel;
     private JLabel vipLabel;
@@ -38,9 +45,11 @@ public class HotelManagerDisplay extends JFrame {
     private JButton addCustomerButton;
     private JButton addAmenitiesButton;
     private JButton payButton;
+    private JButton searchButton;
     private JScrollBar roomsScrollBar;
     private JScrollBar amenitiesScrollBar;
     private JTextField roomNumTextField;
+    private JTextField customerIDTextField;
     private JTextField nameTextField;
     private JTextField phoneTextField;
     private JTextField emailTextField;
@@ -246,9 +255,78 @@ public class HotelManagerDisplay extends JFrame {
         checkoutPanel.setBorder(BorderFactory.createEmptyBorder(0,10,10,10));
         billingPanel.add(checkoutPanel);
 
+
+        //Customer Fields Panel
+        JPanel customerEnterPanels = new JPanel();
+        customerEnterPanels.setLayout(new BoxLayout(customerEnterPanels, BoxLayout.LINE_AXIS));
+
+
+        //Customer ID Label
+        customerIDLabel = new JLabel("Enter Customer ID: ");
+        customerEnterPanels.add(customerIDLabel);
+
+        //Customer ID textField
+        customerIDTextField = new JTextField();
+        customerIDTextField.setMaximumSize(new Dimension(50,20));
+        customerEnterPanels.add(customerIDTextField);
+        billingPanel.add(customerEnterPanels);
+
+        //SearchButton Panel
+        JPanel searchButtonPanel = new JPanel();
+        searchButtonPanel.setLayout(new BoxLayout(searchButtonPanel, BoxLayout.LINE_AXIS));
+
+        //Search Button
+        searchButton = new JButton("Search");
+        searchButtonPanel.add(searchButton);
+        billingPanel.add(searchButtonPanel);
+
+        //Room Price Panel
+        JPanel roomPricePanel = new JPanel();
+        roomPricePanel.setLayout(new BoxLayout(roomPricePanel, BoxLayout.LINE_AXIS));
+
+        //Room Price Label
+        roomPriceLabel = new JLabel("Room Price: ");
+        roomPricePanel.add(roomPriceLabel);
+
+        //Room total Price Label
+        roomPriceTotalLabel = new JLabel("$0.00");
+        roomPricePanel.add(roomPriceTotalLabel);
+        billingPanel.add(roomPricePanel);
+
+        //Amenity Panel
+        JPanel amenityPricePanel = new JPanel();
+        amenityPricePanel.setLayout(new BoxLayout(amenityPricePanel, BoxLayout.LINE_AXIS));
+
+        //Amenity Price Label
+        amenityPriceLabel = new JLabel("Amenity Price: ");
+        amenityPricePanel.add(amenityPriceLabel);
+
+        //Amenity total price Label
+        amenityPriceTotalLabel = new JLabel("$0.00");
+        amenityPricePanel.add(amenityPriceTotalLabel);
+        billingPanel.add(amenityPricePanel);
+
+        //Total Price Panel
+        JPanel totalPricePanel = new JPanel();
+        totalPricePanel.setLayout(new BoxLayout(totalPricePanel, BoxLayout.LINE_AXIS));
+
+        //Total Label
+        totalLabel = new JLabel("Total: ");
+        totalPricePanel.add(totalLabel);
+
+        //Total price Label
+        totalPriceLabel = new JLabel("$0.00");
+        totalPricePanel.add(totalPriceLabel);
+        billingPanel.add(totalPricePanel);
+
+        //Pay Button Panel
+        JPanel payButtonPanel = new JPanel();
+        payButtonPanel.setLayout(new BoxLayout(payButtonPanel, BoxLayout.LINE_AXIS));
+
         //Pay Button
         payButton = new JButton("Pay");
-        //billingPanel.add(payButton);
+        payButtonPanel.add(payButton);
+        billingPanel.add(payButtonPanel);
 
         payButton.addActionListener(new ActionListener() {
             @Override
