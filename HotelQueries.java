@@ -12,9 +12,9 @@ import java.util.ArrayList;
  */
 public class HotelQueries {
 
-	private static final String URL = "jdbc:mysql://localhost/Hotel?useSSL=false";
+	private static final String URL = "jdbc:mysql://localhost/hotel";
 	private static final String USERNAME = "root";
-	private static final String PASSWORD = "norman906";
+	private static final String PASSWORD = "password";
 
 	private Connection connection; // manages connection
 
@@ -149,7 +149,7 @@ public class HotelQueries {
 
 	// add an entry
 	public int addCustomer(
-			String cName, String email, String phone, String num_rooms)
+			String cName, String email, String phone)
 	{
 		int result = 0;
 
@@ -159,7 +159,6 @@ public class HotelQueries {
 			insertNewCustomer.setString(1, cName);
 			insertNewCustomer.setString(2, email);
 			insertNewCustomer.setString(3, phone);
-			//insertNewCustomer.setString(4, num_rooms);
 
 			// insert the new entry; returns # of rows updated
 			result = insertNewCustomer.executeUpdate();

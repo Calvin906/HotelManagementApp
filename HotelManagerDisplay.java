@@ -10,6 +10,9 @@ import java.util.ArrayList;
  * This class Holds all of the needed components for the GUI.
  */
 public class HotelManagerDisplay extends JFrame {
+	
+	//GUI needs instance of HotelQueries to do work on DB
+	private HotelQueries hotelQueries;
 
     //Panels for GUI
     private JPanel roomPanel;
@@ -227,7 +230,17 @@ public class HotelManagerDisplay extends JFrame {
         addCustomerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //TODO
+            	String name = nameTextField.getText();
+            	String email = emailTextField.getText();
+            	String phone = phoneTextField.getText();
+            	
+            	// Add customer to DB
+            	hotelQueries.addCustomer(name, email, phone);
+            	
+            	// Clear text fields on form
+            	nameTextField.setText("");
+            	emailTextField.setText("");
+            	phoneTextField.setText("");
             }
         });
 
