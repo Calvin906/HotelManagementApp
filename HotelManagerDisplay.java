@@ -28,6 +28,7 @@ public class HotelManagerDisplay extends JFrame {
     private JLabel bookRoomLabel;
     private JLabel customerLabel;
     private JLabel customerIDLabel;
+    private JLabel roomIDLabel;
     private JLabel roomPriceLabel;
     private JLabel amenityPriceLabel;
     private JLabel totalLabel;
@@ -50,6 +51,7 @@ public class HotelManagerDisplay extends JFrame {
     private JScrollBar amenitiesScrollBar;
     private JTextField roomNumTextField;
     private JTextField customerIDTextField;
+    private JTextField roomIDTextField;
     private JTextField nameTextField;
     private JTextField phoneTextField;
     private JTextField emailTextField;
@@ -88,7 +90,7 @@ public class HotelManagerDisplay extends JFrame {
         bookRoomPanel.setLayout(new BoxLayout(bookRoomPanel, BoxLayout.LINE_AXIS));
 
         //Book Room label
-        bookRoomLabel = new JLabel("Book a Room");
+        bookRoomLabel = new JLabel("Room/Customer Info");
         bookRoomPanel.add(bookRoomLabel);
         bookRoomPanel.setBorder(BorderFactory.createEmptyBorder(0,10,10,10));
         roomPanel.add(bookRoomPanel);
@@ -256,7 +258,6 @@ public class HotelManagerDisplay extends JFrame {
         JPanel customerEnterPanels = new JPanel();
         customerEnterPanels.setLayout(new BoxLayout(customerEnterPanels, BoxLayout.LINE_AXIS));
 
-
         //Customer ID Label
         customerIDLabel = new JLabel("Enter Customer ID: ");
         customerEnterPanels.add(customerIDLabel);
@@ -266,6 +267,20 @@ public class HotelManagerDisplay extends JFrame {
         customerIDTextField.setMaximumSize(new Dimension(50,20));
         customerEnterPanels.add(customerIDTextField);
         billingPanel.add(customerEnterPanels);
+
+        //Room Fields Panel
+        JPanel roomEnterPanels = new JPanel();
+        roomEnterPanels.setLayout(new BoxLayout(roomEnterPanels, BoxLayout.LINE_AXIS));
+
+        //RoomId Label
+        roomIDLabel = new JLabel("Enter Room ID: ");
+        roomEnterPanels.add(roomIDLabel);
+
+        //Room ID textField
+        roomIDTextField = new JTextField();
+        roomIDTextField.setMaximumSize(new Dimension(50,20));
+        roomEnterPanels.add(roomNumTextField);
+        billingPanel.add(roomEnterPanels);
 
         //SearchButton Panel
         JPanel searchButtonPanel = new JPanel();
