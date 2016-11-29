@@ -85,8 +85,7 @@ public class HotelManagerDisplay extends JFrame {
         super("Hotel Manager");
 
         HotelQueries hotelQueries = new HotelQueries();
-
-
+        
         rooms = new ArrayList<>();
         amenities = new ArrayList<>();
 
@@ -105,7 +104,7 @@ public class HotelManagerDisplay extends JFrame {
         //Book Room label
         bookRoomLabel = new JLabel("Room/Customer Info");
         bookRoomPanel.add(bookRoomLabel);
-        bookRoomPanel.setBorder(BorderFactory.createEmptyBorder(0,10,10,10));
+        bookRoomPanel.setBorder(BorderFactory.createEmptyBorder(0,5,5,5));
         roomPanel.add(bookRoomPanel);
 
         //Rooms Table
@@ -146,7 +145,7 @@ public class HotelManagerDisplay extends JFrame {
         //Panel for the Button and textField and Label
         JPanel roomBookPanel = new JPanel();
         roomBookPanel.setLayout(new BoxLayout(roomBookPanel, BoxLayout.LINE_AXIS));
-        roomBookPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
+        roomBookPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
         roomBookPanel.add(roomsBookLabel2);
         roomBookPanel.add(allRBookLabel);
         roomBookPanel.add(allRoomBookCheckbox);
@@ -156,7 +155,7 @@ public class HotelManagerDisplay extends JFrame {
         roomBookPanel.add(basicBookCheckbox);
         roomBookPanel.add(roomsBookLabel);
         roomBookPanel.add(roomNumBookTextField);
-        roomBookPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        roomBookPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 
 
         //Customer Label
@@ -185,7 +184,7 @@ public class HotelManagerDisplay extends JFrame {
 
         JPanel customerBookPanel = new JPanel();
         customerBookPanel.setLayout(new BoxLayout(customerBookPanel, BoxLayout.LINE_AXIS));
-        customerBookPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
+        customerBookPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
         customerBookPanel.add(customerCustomerBookLabel);
         customerBookPanel.add(allCBookLabel);
         customerBookPanel.add(allCustomerBookCheckbox);
@@ -193,7 +192,7 @@ public class HotelManagerDisplay extends JFrame {
         customerBookPanel.add(nameBookTextField);
         customerBookPanel.add(customerEmailBookLabel);
         customerBookPanel.add(emailBookTextField);
-        customerBookPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        customerBookPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 
         //Rooms Book Button
         roomsBookButton = new JButton("Book");
@@ -204,8 +203,23 @@ public class HotelManagerDisplay extends JFrame {
             }
         });
 
+        //Search Book Button
+        searchBookButton = new JButton("Search");
+        searchBookButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //TODO
+            }
+        });
+
+        JPanel buttonBookPanel = new JPanel();
+        buttonBookPanel.setLayout(new BoxLayout(buttonBookPanel, BoxLayout.LINE_AXIS));
+        buttonBookPanel.add(roomsBookButton);
+        buttonBookPanel.add(searchBookButton);
+
         roomPanel.add(roomBookPanel);
         roomPanel.add(customerBookPanel);
+        roomPanel.add(buttonBookPanel);
         add(roomPanel);
 
         //ROOM PANEL END
@@ -225,7 +239,7 @@ public class HotelManagerDisplay extends JFrame {
         //Customer title label
         customerLabel = new JLabel("Add Customer ");
         customerTitlePanel.add(customerLabel);
-        customerTitlePanel.setBorder(BorderFactory.createEmptyBorder(0,10,10,10));
+        customerTitlePanel.setBorder(BorderFactory.createEmptyBorder(0,5,5,5));
         customerPanel.add(customerTitlePanel);
 
         //Name Label
@@ -238,9 +252,9 @@ public class HotelManagerDisplay extends JFrame {
         //Panel for Name and Name TextField
         JPanel namePanel = new JPanel();
         namePanel.setLayout(new BoxLayout(namePanel, BoxLayout.LINE_AXIS));
-        namePanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
+        namePanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
         namePanel.add(nameCustomerLabel);
-        namePanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        namePanel.add(Box.createRigidArea(new Dimension(5, 0)));
         namePanel.add(nameCustomerTextField);
         customerPanel.add(namePanel);
 
@@ -253,9 +267,9 @@ public class HotelManagerDisplay extends JFrame {
         //Name Panel
         JPanel vipPanel = new JPanel();
         vipPanel.setLayout(new BoxLayout(vipPanel, BoxLayout.LINE_AXIS));
-        vipPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
+        vipPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
         vipPanel.add(vipCustomerLabel);
-        vipPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        vipPanel.add(Box.createRigidArea(new Dimension(5, 0)));
         vipPanel.add(vipCustomerCheckbox);
         customerPanel.add(vipPanel);
 
@@ -269,9 +283,9 @@ public class HotelManagerDisplay extends JFrame {
         //Email Panel
         JPanel emailPanel = new JPanel();
         emailPanel.setLayout(new BoxLayout(emailPanel, BoxLayout.LINE_AXIS));
-        emailPanel.setBorder(BorderFactory.createEmptyBorder(0,10,10,10));
+        emailPanel.setBorder(BorderFactory.createEmptyBorder(0,5,5,5));
         emailPanel.add(emailCustomerLabel);
-        emailPanel.add(Box.createRigidArea(new Dimension(10,0)));
+        emailPanel.add(Box.createRigidArea(new Dimension(5,0)));
         emailPanel.add(emailCustomerTextField);
         customerPanel.add(emailPanel);
 
@@ -285,9 +299,9 @@ public class HotelManagerDisplay extends JFrame {
         //Phone Panel
         JPanel phonePanel = new JPanel();
         phonePanel.setLayout(new BoxLayout(phonePanel, BoxLayout.LINE_AXIS));
-        phonePanel.setBorder(BorderFactory.createEmptyBorder(0,10,10,10));
+        phonePanel.setBorder(BorderFactory.createEmptyBorder(0,5,5,5));
         phonePanel.add(phoneCustomerLabel);
-        phonePanel.add(Box.createRigidArea(new Dimension(10,0)));
+        phonePanel.add(Box.createRigidArea(new Dimension(5,0)));
         phonePanel.add(phoneCustomerTextField);
         customerPanel.add(phonePanel);
 
