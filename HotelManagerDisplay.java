@@ -29,6 +29,8 @@ public class HotelManagerDisplay extends JFrame {
     private JLabel suitBookLabel;
     private JLabel basicBookLabel;
     private JLabel customerNameBookLabel;
+    private JLabel customerEmailBookLabel;
+    private JLabel customerCustomerBookLabel;
     private JLabel allCBookLabel;
     private JLabel amountLabel;
     private JLabel bookRoomLabel;
@@ -114,44 +116,84 @@ public class HotelManagerDisplay extends JFrame {
         roomPanel.add(roomsBookTable);
 
         //Another Room Label
-        roomsBookLabel2 = new JLabel("Room: ");
+        roomsBookLabel2 = new JLabel("Room:   ");
 
         //All Label
         allRBookLabel = new JLabel("All");
 
+        //All Room checkbox
+        allRoomBookCheckbox = new JCheckBox();
+
         //Suite Label
         suitBookLabel = new JLabel("Suite: ");
+
+        //Suite Checkbox
+        suiteBookCheckbox = new JCheckBox();
 
         //Basic Label
         basicBookLabel = new JLabel("Basic: ");
 
-        //Customer Label
-        customerNameBookLabel = new JLabel("Customer: ");
-
-        //All Customer Label
-        allCBookLabel = new JLabel("All: ");
-
-        //Name Label
-        customerNameBookLabel = new JLabel("Name: ");
-
-        //Name Text field
-        nameBookTextField = new JTextField();
-        nameBookTextField.setMaximumSize(new Dimension(80,20));
-
-        //Email Text field
-        emailBookTextField = new JTextField();
-        emailBookTextField.setMaximumSize(new Dimension(80,20));
-
-
+        //Basic Checkbox
+        basicBookCheckbox = new JCheckBox();
 
         //Rooms Label
         roomsBookLabel = new JLabel("Room #: ");
 
         //Rooms TextField
         roomNumBookTextField = new JTextField();
-        roomNumBookTextField.setMaximumSize(new Dimension(80, 20));
-        roomPanel.add(roomNumBookTextField);
+        roomNumBookTextField.setMaximumSize(new Dimension(55, 20));
 
+        //Panel for the Button and textField and Label
+        JPanel roomBookPanel = new JPanel();
+        roomBookPanel.setLayout(new BoxLayout(roomBookPanel, BoxLayout.LINE_AXIS));
+        roomBookPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
+        roomBookPanel.add(roomsBookLabel2);
+        roomBookPanel.add(allRBookLabel);
+        roomBookPanel.add(allRoomBookCheckbox);
+        roomBookPanel.add(suitBookLabel);
+        roomBookPanel.add(suiteBookCheckbox);
+        roomBookPanel.add(basicBookLabel);
+        roomBookPanel.add(basicBookCheckbox);
+        roomBookPanel.add(roomsBookLabel);
+        roomBookPanel.add(roomNumBookTextField);
+        roomBookPanel.add(Box.createRigidArea(new Dimension(10, 0)));
+
+
+        //Customer Label
+        customerCustomerBookLabel = new JLabel("Customer: ");
+
+        //All Customer Label
+        allCBookLabel = new JLabel("All: ");
+
+        //All Customer Checkbox
+        allCustomerBookCheckbox = new JCheckBox();
+
+        //Name Label
+        customerNameBookLabel = new JLabel("Name: ");
+
+        //Name Text field
+        nameBookTextField = new JTextField();
+        nameBookTextField.setMaximumSize(new Dimension(55,20));
+
+        //Email Customer Label
+        customerEmailBookLabel = new JLabel("Email: ");
+
+        //Email Text field
+        emailBookTextField = new JTextField();
+        emailBookTextField.setMaximumSize(new Dimension(55,20));
+
+
+        JPanel customerBookPanel = new JPanel();
+        customerBookPanel.setLayout(new BoxLayout(customerBookPanel, BoxLayout.LINE_AXIS));
+        customerBookPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
+        customerBookPanel.add(customerCustomerBookLabel);
+        customerBookPanel.add(allCBookLabel);
+        customerBookPanel.add(allCustomerBookCheckbox);
+        customerBookPanel.add(customerNameBookLabel);
+        customerBookPanel.add(nameBookTextField);
+        customerBookPanel.add(customerEmailBookLabel);
+        customerBookPanel.add(emailBookTextField);
+        customerBookPanel.add(Box.createRigidArea(new Dimension(10, 0)));
 
         //Rooms Book Button
         roomsBookButton = new JButton("Book");
@@ -162,17 +204,8 @@ public class HotelManagerDisplay extends JFrame {
             }
         });
 
-
-        //Panel for the Button and textField and Label
-        JPanel bookPanel = new JPanel();
-        bookPanel.setLayout(new BoxLayout(bookPanel, BoxLayout.LINE_AXIS));
-        bookPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 10));
-        bookPanel.add(roomsBookLabel);
-        bookPanel.add(roomNumBookTextField);
-        bookPanel.add(Box.createRigidArea(new Dimension(10, 0)));
-        bookPanel.add(roomsBookButton);
-
-        roomPanel.add(bookPanel);
+        roomPanel.add(roomBookPanel);
+        roomPanel.add(customerBookPanel);
         add(roomPanel);
 
         //ROOM PANEL END
