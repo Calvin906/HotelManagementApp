@@ -32,6 +32,7 @@ public class HotelManagerDisplay extends JFrame {
     private JLabel suitBookLabel;
     private JLabel basicBookLabel;
     private JLabel customerNameBookLabel;
+    private JLabel cIDNameBookLabel;
     private JLabel customerEmailBookLabel;
     private JLabel customerCustomerBookLabel;
     private JLabel allCBookLabel;
@@ -66,6 +67,7 @@ public class HotelManagerDisplay extends JFrame {
     private JScrollBar roomsScrollBar;
     private JScrollBar amenitiesScrollBar;
     private JTextField nameBookTextField;
+    private JTextField cIDNameBookTextField;
     private JTextField emailBookTextField;
     private JTextField roomNumBookTextField;
     private JTextField customerIDCheckoutTextField;
@@ -182,6 +184,13 @@ public class HotelManagerDisplay extends JFrame {
         //Name Text field
         nameBookTextField = new JTextField();
         nameBookTextField.setMaximumSize(new Dimension(55,20));
+        
+        //ID Label
+        cIDNameBookLabel = new JLabel("cID: ");
+
+        //ID Text field
+        cIDNameBookTextField = new JTextField();
+        cIDNameBookTextField.setMaximumSize(new Dimension(55,20));
 
         //Email Customer Label
         customerEmailBookLabel = new JLabel("Email: ");
@@ -199,6 +208,10 @@ public class HotelManagerDisplay extends JFrame {
         customerBookPanel.add(allCustomerBookCheckbox);
         customerBookPanel.add(customerNameBookLabel);
         customerBookPanel.add(nameBookTextField);
+        
+        customerBookPanel.add(cIDNameBookLabel);
+        customerBookPanel.add(cIDNameBookTextField);
+        
         customerBookPanel.add(customerEmailBookLabel);
         customerBookPanel.add(emailBookTextField);
         customerBookPanel.add(Box.createRigidArea(new Dimension(5, 0)));
@@ -326,7 +339,19 @@ public class HotelManagerDisplay extends JFrame {
         addCustomerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //TODO
+            	String name = nameCustomerTextField.getText();
+            	String email = emailCustomerTextField.getText();
+            	String phone = phoneCustomerTextField.getText();
+            	
+            	// Add customer to DB
+            	Integer id = hotelQueries.addCustomer(name, email, phone);
+            	
+            	cIDNameBookTextField.setText(id.toString());
+            	
+            	// Clear text fields on form
+            	nameCustomerTextField.setText("");
+            	emailCustomerTextField.setText("");
+            	phoneCustomerTextField.setText("");
             }
         });
 

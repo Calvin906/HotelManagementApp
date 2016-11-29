@@ -3,6 +3,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.ArrayList;
 /**
@@ -14,7 +15,7 @@ public class HotelQueries {
 
 	private static final String URL = "jdbc:mysql://localhost/Hotel?useSSL=false";
 	private static final String USERNAME = "root";
-	private static final String PASSWORD = "norman906";
+	private static final String PASSWORD = "password";
 
 	private Connection connection; // manages connection
 
@@ -46,7 +47,7 @@ public class HotelQueries {
 			insertNewCustomer = connection.prepareStatement(
 					"INSERT INTO customer " +
 							"(cName, email, phone) " +
-							"VALUES (?, ?, ?)");
+							"VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 		}
 		catch (SQLException sqlException)
 		{
@@ -149,7 +150,7 @@ public class HotelQueries {
 
 	// add an entry
 	public int addCustomer(
-			String cName, String email, String phone, String num_rooms)
+			String cName, String email, String phone)
 	{
 		int result = 0;
 
@@ -161,15 +162,24 @@ public class HotelQueries {
 			insertNewCustomer.setString(3, phone);
 			//insertNewCustomer.setString(4, num_rooms);
 
-			// insert the new entry; returns # of rows updated
-			result = insertNewCustomer.executeUpdate();
+			// insert the new entry (returns # of rows updated)
+			insertNewCustomer.executeUpdate();
+		
+			// Get the ID of the newly inserted Customer
+			ResultSet rs = insertNewCustomer.getGeneratedKeys();
+			if(rs.next())
+			{
+				result = rs.getInt(1);
+			}
+			
 		}
 		catch (SQLException sqlException)
 		{
 			sqlException.printStackTrace();
 			close();
 		}
-
+		System.out.println("The ID of newly inserted customer is: "  + result);
+		// Return the ID of the customer
 		return result;
 	}
 
