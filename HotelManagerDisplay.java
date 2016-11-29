@@ -23,6 +23,9 @@ public class HotelManagerDisplay extends JFrame {
     //Fields for GUI
     private JTable roomsBookTable;
     private JTable amenitiesAmenityTable;
+    private JLabel itemAmenityLabel;
+    private JLabel itemNameAmenityLabel;
+    private JLabel itemPriceAmenityLabel;
     private JLabel roomsBookLabel;
     private JLabel roomsBookLabel2;
     private JLabel allRBookLabel;
@@ -56,6 +59,10 @@ public class HotelManagerDisplay extends JFrame {
     private JButton addAmenitiesButton;
     private JButton payButton;
     private JButton searchButton;
+    private JButton createAmenityButton;
+    private JButton searchAmenityButton;
+    private JButton updateAmenityButton;
+    private JButton deleteAmenityButton;
     private JScrollBar roomsScrollBar;
     private JScrollBar amenitiesScrollBar;
     private JTextField nameBookTextField;
@@ -68,6 +75,8 @@ public class HotelManagerDisplay extends JFrame {
     private JTextField emailCustomerTextField;
     private JTextField itemAmenityTextField;
     private JTextField amountAmenityTextField;
+    private JTextField addPriceAmenityTextField;
+    private JTextField addItemAmenityTextField;
     private JCheckBox vipCustomerCheckbox;
     private JCheckBox allRoomBookCheckbox;
     private JCheckBox allCustomerBookCheckbox;
@@ -85,7 +94,7 @@ public class HotelManagerDisplay extends JFrame {
         super("Hotel Manager");
 
         HotelQueries hotelQueries = new HotelQueries();
-        
+
         rooms = new ArrayList<>();
         amenities = new ArrayList<>();
 
@@ -338,7 +347,7 @@ public class HotelManagerDisplay extends JFrame {
         //CheckoutLabel
         checkoutLabel = new JLabel("Checkout");
         checkoutPanel.add(checkoutLabel);
-        checkoutPanel.setBorder(BorderFactory.createEmptyBorder(0,10,10,10));
+        checkoutPanel.setBorder(BorderFactory.createEmptyBorder(0,5,5,5));
         billingPanel.add(checkoutPanel);
 
 
@@ -452,16 +461,8 @@ public class HotelManagerDisplay extends JFrame {
         //Amenity title
         amenityLabel = new JLabel("Add Item ");
         itemPanel.add(amenityLabel);
-        itemPanel.setBorder(BorderFactory.createEmptyBorder(0,10,10,10));
+        itemPanel.setBorder(BorderFactory.createEmptyBorder(0,5,5,5));
         amenitiesPanel.add(itemPanel);
-
-        //JTable for Amenities
-        amenitiesAmenityTable = new JTable(new AmenitiesTableModel());
-        amenitiesAmenityTable.setFillsViewportHeight(true);
-        amenitiesAmenityTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-        amenitiesPanel.add(amenitiesAmenityTable.getTableHeader(), BorderLayout.NORTH);
-        amenitiesPanel.add(amenitiesAmenityTable);
-
 
         //Item Label
         itemLabel = new JLabel("Item #: ");
@@ -489,7 +490,7 @@ public class HotelManagerDisplay extends JFrame {
         //Panel for all of actions on Amenity Panel
         JPanel itemPanel = new JPanel();
         itemPanel.setLayout(new BoxLayout(itemPanel, BoxLayout.LINE_AXIS));
-        itemPanel.setBorder(BorderFactory.createEmptyBorder(0,10,10,10));
+        itemPanel.setBorder(BorderFactory.createEmptyBorder(0,5,5,5));
         itemPanel.add(itemLabel);
         itemPanel.add(itemAmenityTextField);
         itemPanel.add(amountLabel);
@@ -497,6 +498,95 @@ public class HotelManagerDisplay extends JFrame {
         itemPanel.add(addAmenitiesButton);
 
         amenitiesPanel.add(itemPanel);
+
+        //JLabel for Amenity Items
+        itemAmenityLabel = new JLabel("Amenity Items ");
+
+        //JPanel for Amenity Items table title
+        JPanel amenityTablePanel = new JPanel();
+        amenityTablePanel.setLayout(new BoxLayout(amenityTablePanel, BoxLayout.LINE_AXIS));
+        amenityTablePanel.add(itemAmenityLabel);
+
+        amenitiesPanel.add(amenityTablePanel);
+
+        //JTable for Amenities
+        amenitiesAmenityTable = new JTable(new AmenitiesTableModel());
+        amenitiesAmenityTable.setFillsViewportHeight(true);
+        amenitiesAmenityTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+
+        amenitiesPanel.add(amenitiesAmenityTable.getTableHeader(), BorderLayout.NORTH);
+        amenitiesPanel.add(amenitiesAmenityTable);
+
+
+        //Item Name Label for add
+        itemNameAmenityLabel = new JLabel("Item Name: ");
+
+        //Item TextField Name for add
+        addItemAmenityTextField = new JTextField();
+        addItemAmenityTextField.setMaximumSize(new Dimension(70,20));
+
+        //Item Price Label for add
+        itemPriceAmenityLabel = new JLabel("Price: ");
+
+        //Item TextField for price
+        addPriceAmenityTextField = new JTextField();
+        addPriceAmenityTextField.setMaximumSize(new Dimension(55,20));
+
+        //add Items panel
+        JPanel addItemsPanel = new JPanel();
+        addItemsPanel.setLayout(new BoxLayout(addItemsPanel, BoxLayout.LINE_AXIS));
+        addItemsPanel.add(itemNameAmenityLabel);
+        addItemsPanel.add(addItemAmenityTextField);
+        addItemsPanel.add(itemPriceAmenityLabel);
+        addItemsPanel.add(addPriceAmenityTextField);
+
+        amenitiesPanel.add(addItemsPanel);
+
+        //Search Button
+        searchAmenityButton = new JButton("Search");
+        searchAmenityButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //TODO
+            }
+        });
+
+        //Add Button
+        createAmenityButton = new JButton("Create");
+        createAmenityButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //TODO
+            }
+        });
+
+        //Update Button
+        updateAmenityButton = new JButton("Update");
+        updateAmenityButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //TODO
+            }
+        });
+
+        //Delete Button
+        deleteAmenityButton = new JButton("Delete");
+        deleteAmenityButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                //TODO
+            }
+        });
+
+        //Button Panel for adding
+        JPanel addButtonsAmenityPanel = new JPanel();
+        addButtonsAmenityPanel.setLayout(new BoxLayout(addButtonsAmenityPanel, BoxLayout.LINE_AXIS));
+        addButtonsAmenityPanel.add(searchAmenityButton);
+        addButtonsAmenityPanel.add(createAmenityButton);
+        addButtonsAmenityPanel.add(updateAmenityButton);
+        addButtonsAmenityPanel.add(deleteAmenityButton);
+
+        amenitiesPanel.add(addButtonsAmenityPanel);
 
         add(amenitiesPanel);
 
