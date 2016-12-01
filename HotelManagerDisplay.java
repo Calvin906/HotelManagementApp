@@ -3,13 +3,23 @@ import javax.swing.table.AbstractTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
- * Created by Alex Preston on 11/12/16.
+ * CS157A Group Project Fall 2016
+ * Hotel Guest Management System
+ * Alex Preston, Frank Mock, Joshua Urrea
  * This class Holds all of the needed components for the GUI.
  */
 public class HotelManagerDisplay extends JFrame {
+	
+	// Table models used to populate JTables
+	//private ResultSetTableModel tableModel;
+	private RoomCustomerTableModel tableModel;
+	private AmenityTableModel ammenityTableModel;
 
     //Panels for GUI
     private JPanel roomPanel;
@@ -32,6 +42,8 @@ public class HotelManagerDisplay extends JFrame {
     private JLabel suitBookLabel;
     private JLabel basicBookLabel;
     private JLabel customerNameBookLabel;
+    private JLabel customerMessageLabel;
+    private JLabel cIDNameBookLabel;
     private JLabel customerEmailBookLabel;
     private JLabel customerCustomerBookLabel;
     private JLabel allCBookLabel;
@@ -39,9 +51,11 @@ public class HotelManagerDisplay extends JFrame {
     private JLabel bookRoomLabel;
     private JLabel customerLabel;
     private JLabel customerIDLabel;
+    private JLabel cIDLabel;
     private JLabel roomIDLabel;
     private JLabel roomPriceLabel;
     private JLabel amenityPriceLabel;
+    private JLabel ammenCIDLabel;
     private JLabel totalLabel;
     private JLabel roomPriceTotalLabel;
     private JLabel amenityPriceTotalLabel;
@@ -54,8 +68,11 @@ public class HotelManagerDisplay extends JFrame {
     private JLabel checkoutLabel;
     private JLabel itemLabel;
     private JButton roomsBookButton;
-    private JButton searchBookButton;
+    private JButton searchRoomButton;
+    private JButton searchCustomerButton;
     private JButton addCustomerButton;
+    private JButton updateCustomerButton;
+    private JButton deleteCustomerButton;
     private JButton addAmenitiesButton;
     private JButton payButton;
     private JButton searchButton;
@@ -66,14 +83,17 @@ public class HotelManagerDisplay extends JFrame {
     private JScrollBar roomsScrollBar;
     private JScrollBar amenitiesScrollBar;
     private JTextField nameBookTextField;
+    private JTextField cIDNameBookTextField;
     private JTextField emailBookTextField;
     private JTextField roomNumBookTextField;
     private JTextField customerIDCheckoutTextField;
+    private JTextField customerIDTextField;
     private JTextField roomIDCheckoutTextField;
     private JTextField nameCustomerTextField;
     private JTextField phoneCustomerTextField;
     private JTextField emailCustomerTextField;
     private JTextField itemAmenityTextField;
+    private JTextField ammenCustomerIDTextField;
     private JTextField amountAmenityTextField;
     private JTextField addPriceAmenityTextField;
     private JTextField addItemAmenityTextField;
@@ -90,17 +110,22 @@ public class HotelManagerDisplay extends JFrame {
     private ArrayList<Amenity> amenities;
 
 
-    public HotelManagerDisplay() {
+    public HotelManagerDisplay() throws SQLException {
         super("Hotel Manager");
 
+        // hotel queries holds all DB queries
         HotelQueries hotelQueries = new HotelQueries();
+        
+        // models for the DB connected JTables
+        tableModel = new RoomCustomerTableModel();
+        ammenityTableModel = new AmenityTableModel();
 
         rooms = new ArrayList<>();
         amenities = new ArrayList<>();
 
-        /***********************************/
+        /************************************************************************************/
 
-        //ROOM PANEL START
+        //ROOM PANEL START - (room and customer info table area)
 
         //Room Panel
         roomPanel = new JPanel();
@@ -112,16 +137,21 @@ public class HotelManagerDisplay extends JFrame {
 
         //Book Room label
         bookRoomLabel = new JLabel("Room/Customer Info");
+        bookRoomLabel.setFont(new Font("Serif", Font.BOLD, 18));
         bookRoomPanel.add(bookRoomLabel);
         bookRoomPanel.setBorder(BorderFactory.createEmptyBorder(0,5,5,5));
         roomPanel.add(bookRoomPanel);
 
         //Rooms Table
-        roomsBookTable = new JTable(new RoomsTableModel());
+        roomsBookTable = new JTable(tableModel);
+        JScrollPane scrollPane = new JScrollPane(roomsBookTable);
         roomsBookTable.setFillsViewportHeight(true);
         roomsBookTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+        //roomPanel.add(roomsBookTable.getTableHeader(), BorderLayout.NORTH);
+        //roomPanel.add(roomsBookTable);
         roomPanel.add(roomsBookTable.getTableHeader(), BorderLayout.NORTH);
-        roomPanel.add(roomsBookTable);
+        roomPanel.add(scrollPane);
+        
 
         //Another Room Label
         roomsBookLabel2 = new JLabel("Room:   ");
@@ -182,6 +212,13 @@ public class HotelManagerDisplay extends JFrame {
         //Name Text field
         nameBookTextField = new JTextField();
         nameBookTextField.setMaximumSize(new Dimension(55,20));
+        
+        //ID Label
+        cIDNameBookLabel = new JLabel("cID: ");
+
+        //ID Text field
+        cIDNameBookTextField = new JTextField();
+        cIDNameBookTextField.setMaximumSize(new Dimension(55,20));
 
         //Email Customer Label
         customerEmailBookLabel = new JLabel("Email: ");
@@ -199,6 +236,10 @@ public class HotelManagerDisplay extends JFrame {
         customerBookPanel.add(allCustomerBookCheckbox);
         customerBookPanel.add(customerNameBookLabel);
         customerBookPanel.add(nameBookTextField);
+        
+        customerBookPanel.add(cIDNameBookLabel);
+        customerBookPanel.add(cIDNameBookTextField);
+        
         customerBookPanel.add(customerEmailBookLabel);
         customerBookPanel.add(emailBookTextField);
         customerBookPanel.add(Box.createRigidArea(new Dimension(5, 0)));
@@ -208,23 +249,49 @@ public class HotelManagerDisplay extends JFrame {
         roomsBookButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //TODO
+            	//TO DO
             }
         });
 
-        //Search Book Button
-        searchBookButton = new JButton("Search");
-        searchBookButton.addActionListener(new ActionListener() {
+        //Search for Room Button
+        searchRoomButton = new JButton("Room");
+        searchRoomButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //TODO
+            	try {
+            		tableModel.setQueryGetAllRooms();
+				} catch (IllegalStateException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+            }
+        });
+        
+        //Search for Customer Button
+        searchCustomerButton = new JButton("Customer");
+        searchCustomerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	try {
+            		tableModel.setQueryGetAllCustomers();
+				} catch (IllegalStateException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
             }
         });
 
         JPanel buttonBookPanel = new JPanel();
         buttonBookPanel.setLayout(new BoxLayout(buttonBookPanel, BoxLayout.LINE_AXIS));
         buttonBookPanel.add(roomsBookButton);
-        buttonBookPanel.add(searchBookButton);
+        buttonBookPanel.add(searchRoomButton);
+        buttonBookPanel.add(searchCustomerButton);
 
         roomPanel.add(roomBookPanel);
         roomPanel.add(customerBookPanel);
@@ -233,7 +300,7 @@ public class HotelManagerDisplay extends JFrame {
 
         //ROOM PANEL END
 
-        /***********************************/
+        /******************************************************************************/
 
         //CUSTOMER PANEL START
 
@@ -246,17 +313,35 @@ public class HotelManagerDisplay extends JFrame {
         customerTitlePanel.setLayout( new BoxLayout(customerTitlePanel, BoxLayout.LINE_AXIS));
 
         //Customer title label
-        customerLabel = new JLabel("Add Customer ");
+        customerLabel = new JLabel("Customer ");
+        customerLabel.setFont(new Font("Serif", Font.BOLD, 18));
         customerTitlePanel.add(customerLabel);
         customerTitlePanel.setBorder(BorderFactory.createEmptyBorder(0,5,5,5));
         customerPanel.add(customerTitlePanel);
 
+        //cID Label
+        cIDLabel = new JLabel("cID: ");
+
+        //cID TextField
+        customerIDTextField = new JTextField();
+        customerIDTextField.setMaximumSize(new Dimension(100,20));
+        
+        //Panel for cID and cID TextField
+        JPanel cIDPanel = new JPanel();
+        cIDPanel.setLayout(new BoxLayout(cIDPanel, BoxLayout.LINE_AXIS));
+        cIDPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
+        cIDPanel.add(cIDLabel);
+        cIDPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        cIDPanel.add(customerIDTextField);
+        customerPanel.add(cIDPanel);
+        
         //Name Label
         nameCustomerLabel = new JLabel("Name: ");
 
         //Name TextField
         nameCustomerTextField = new JTextField();
         nameCustomerTextField.setMaximumSize(new Dimension(100,20));
+        
 
         //Panel for Name and Name TextField
         JPanel namePanel = new JPanel();
@@ -266,21 +351,6 @@ public class HotelManagerDisplay extends JFrame {
         namePanel.add(Box.createRigidArea(new Dimension(5, 0)));
         namePanel.add(nameCustomerTextField);
         customerPanel.add(namePanel);
-
-        //Vip Check Label
-        vipCustomerLabel = new JLabel("VIP:               ");
-
-        //Vip Checkbox
-        vipCustomerCheckbox = new JCheckBox();
-
-        //Name Panel
-        JPanel vipPanel = new JPanel();
-        vipPanel.setLayout(new BoxLayout(vipPanel, BoxLayout.LINE_AXIS));
-        vipPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
-        vipPanel.add(vipCustomerLabel);
-        vipPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-        vipPanel.add(vipCustomerCheckbox);
-        customerPanel.add(vipPanel);
 
         //Email Label
         emailCustomerLabel = new JLabel("Email: ");
@@ -313,6 +383,24 @@ public class HotelManagerDisplay extends JFrame {
         phonePanel.add(Box.createRigidArea(new Dimension(5,0)));
         phonePanel.add(phoneCustomerTextField);
         customerPanel.add(phonePanel);
+        
+        
+        //Vip Check Label
+        vipCustomerLabel = new JLabel("VIP:               ");
+
+        //Vip Checkbox
+        vipCustomerCheckbox = new JCheckBox();
+
+        //Name Panel
+        JPanel vipPanel = new JPanel();
+        vipPanel.setLayout(new BoxLayout(vipPanel, BoxLayout.LINE_AXIS));
+        vipPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
+        vipPanel.add(vipCustomerLabel);
+        vipPanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        vipPanel.add(vipCustomerCheckbox);
+        customerPanel.add(vipPanel);
+        
+        
 
         //Panel for the Button to offset Centering issue
         JPanel customerButtonPanel = new JPanel();
@@ -326,18 +414,244 @@ public class HotelManagerDisplay extends JFrame {
         addCustomerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //TODO
+            	String name = nameCustomerTextField.getText();
+            	String email = emailCustomerTextField.getText();
+            	String phone = phoneCustomerTextField.getText();
+            	
+            	// Add customer to DB
+            	Integer id = hotelQueries.addCustomer(name, email, phone);
+            	
+            	cIDNameBookTextField.setText(id.toString());
+            	
+            	customerMessageLabel.setText("SUCCESS. cID# " + id.toString());
+            	
+            	// Clear text fields on form
+            	nameCustomerTextField.setText("");
+            	emailCustomerTextField.setText("");
+            	phoneCustomerTextField.setText("");
+            	
+            	/*
+            	 * Update the room/customer table in the GUI to
+            	 * reflect the model change
+            	 */
+            	
+            	try {
+            		tableModel.setQueryGetAllCustomers();
+				} catch (IllegalStateException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
             }
         });
 
+        
+        
+        //Update customer button
+        updateCustomerButton = new JButton("Update");
+        customerButtonPanel.add(updateCustomerButton);
+        customerPanel.add(customerButtonPanel);
 
+        updateCustomerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	// Get textfield strings
+            	String cID = customerIDTextField.getText();
+            	String name = nameCustomerTextField.getText();
+            	String email = emailCustomerTextField.getText();
+            	String phone = phoneCustomerTextField.getText();
+            	
+            	// If cId field is empty, stop update and inform user
+            	if(cID.isEmpty())
+            	{
+            		System.err.println("Customer ID can not be empty");
+            		return;
+            	}
+            	
+            	//Update name, email and phone if all three are not empty
+            	if(!name.isEmpty() && !email.isEmpty() && !phone.isEmpty())
+            	{
+                	try {
+                		tableModel.setQueryUpdateCustNameEmailPhone(cID, name, email, phone);
+
+    				} catch (IllegalStateException e1) {
+    					// TODO Auto-generated catch block
+    					e1.printStackTrace();
+    				} catch (SQLException e1) {
+    					// TODO Auto-generated catch block
+    					e1.printStackTrace();
+    				}
+                 // if name and email are not empty and phone is
+            	}else if(!name.isEmpty() && !email.isEmpty() && phone.isEmpty())
+            	{
+                	try {
+                		tableModel.setQueryUpdateCustNameEmail(cID, name, email);
+
+    				} catch (IllegalStateException e1) {
+    					// TODO Auto-generated catch block
+    					e1.printStackTrace();
+    				} catch (SQLException e1) {
+    					// TODO Auto-generated catch block
+    					e1.printStackTrace();
+    				}
+                 //if name and phone are not empty and email is
+            	}else if(!name.isEmpty() && email.isEmpty() && !phone.isEmpty())
+            	{
+                	try {
+                		tableModel.setQueryUpdateCustNamePhone(cID, name, phone);
+
+    				} catch (IllegalStateException e1) {
+    					// TODO Auto-generated catch block
+    					e1.printStackTrace();
+    				} catch (SQLException e1) {
+    					// TODO Auto-generated catch block
+    					e1.printStackTrace();
+    				}
+                 // Update if email and phone are not empty but name is
+            	}else if(name.isEmpty() && !email.isEmpty() && !phone.isEmpty())
+            	{
+                	try {
+                		tableModel.setQueryUpdateCustEmailPhone(cID, email, phone);
+
+    				} catch (IllegalStateException e1) {
+    					// TODO Auto-generated catch block
+    					e1.printStackTrace();
+    				} catch (SQLException e1) {
+    					// TODO Auto-generated catch block
+    					e1.printStackTrace();
+    				}
+                 // Update name only
+            	}else if(!name.isEmpty() && email.isEmpty() && phone.isEmpty())
+            	{
+                	try {
+                		tableModel.setQueryUpdateCustName(cID, name);
+
+    				} catch (IllegalStateException e1) {
+    					// TODO Auto-generated catch block
+    					e1.printStackTrace();
+    				} catch (SQLException e1) {
+    					// TODO Auto-generated catch block
+    					e1.printStackTrace();
+    				}
+                 // Update email only
+            	}else if(name.isEmpty() && !email.isEmpty() && phone.isEmpty())
+            	{
+                	try {
+                		tableModel.setQueryUpdateCustEmail(cID, email);
+
+    				} catch (IllegalStateException e1) {
+    					// TODO Auto-generated catch block
+    					e1.printStackTrace();
+    				} catch (SQLException e1) {
+    					// TODO Auto-generated catch block
+    					e1.printStackTrace();
+    				}
+                 // Update only the phone
+            	}else if(name.isEmpty() && email.isEmpty() && !phone.isEmpty())
+            	{
+                	try {
+                		tableModel.setQueryUpdateCustPhone(cID, phone);
+
+    				} catch (IllegalStateException e1) {
+    					// TODO Auto-generated catch block
+    					e1.printStackTrace();
+    				} catch (SQLException e1) {
+    					// TODO Auto-generated catch block
+    					e1.printStackTrace();
+    				}
+            	}
+            	
+            	
+            	/*
+            	 * Update the room/customer table in the GUI to
+            	 * reflect the model update
+            	 */
+            	
+            	try {
+            		tableModel.setQueryGetAllCustomers();
+				} catch (IllegalStateException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+            	
+            	
+            	// Update the user message
+            	customerMessageLabel.setText("UPDATE SUCCESSFUL");
+            	
+            	// Clear text fields on form
+            	customerIDTextField.setText("");
+            	nameCustomerTextField.setText("");
+            	emailCustomerTextField.setText("");
+            	phoneCustomerTextField.setText("");
+            }
+        });
+        
+        //Delete customer button
+        deleteCustomerButton = new JButton("Delete");
+        customerButtonPanel.add(deleteCustomerButton);
+        customerPanel.add(customerButtonPanel);
+
+        deleteCustomerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            	String cID = customerIDTextField.getText();
+            	if(cID.isEmpty())
+            	{
+            		System.err.println("cID can not be empty");
+            		return;
+            	}
+            	
+            	try {
+            		tableModel.setQueryDeleteCustomer(cID);
+				} catch (IllegalStateException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+            	
+            	customerMessageLabel.setText("SUCCESSFUL DELETION");
+            	// Clear text fields on form
+            	nameCustomerTextField.setText("");
+            	emailCustomerTextField.setText("");
+            	phoneCustomerTextField.setText("");
+            	
+            	/*
+            	 * Update the room/customer table in the GUI to
+            	 * reflect the model change
+            	 */
+            	
+            	try {
+            		tableModel.setQueryGetAllCustomers();
+				} catch (IllegalStateException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+            }
+        });
+        
+        customerMessageLabel = new JLabel("GUEST MANAGEMENT SYSTEM");
+        customerMessageLabel.setFont(new Font("Serif", Font.BOLD, 12));
+        JLabel spacer = new JLabel("    ");
+        customerPanel.add(spacer);
+        customerPanel.add(customerMessageLabel);
+        
         add(customerPanel);
 
         //CUSTOMER PANEL END
 
-        /***********************************/
+        /********************************************************************/
 
-        //TAB PANEL START
+        //TAB/INVOICE PANEL START
         billingPanel = new JPanel();
         billingPanel.setLayout(new BoxLayout(billingPanel, BoxLayout.PAGE_AXIS));
 
@@ -346,6 +660,7 @@ public class HotelManagerDisplay extends JFrame {
 
         //CheckoutLabel
         checkoutLabel = new JLabel("Checkout");
+        checkoutLabel.setFont(new Font("Serif", Font.BOLD, 18));
         checkoutPanel.add(checkoutLabel);
         checkoutPanel.setBorder(BorderFactory.createEmptyBorder(0,5,5,5));
         billingPanel.add(checkoutPanel);
@@ -448,7 +763,7 @@ public class HotelManagerDisplay extends JFrame {
 
         //TAB PANEL END
 
-        /***********************************/
+        /**************************************************************************/
 
         //AMENITIES PANEL START
         amenitiesPanel = new JPanel();
@@ -459,7 +774,8 @@ public class HotelManagerDisplay extends JFrame {
         itemPanel.setLayout(new BoxLayout(itemPanel, BoxLayout.LINE_AXIS));
 
         //Amenity title
-        amenityLabel = new JLabel("Add Item ");
+        amenityLabel = new JLabel("Charge Item to Customer ");
+        amenityLabel.setFont(new Font("Serif", Font.BOLD, 18));
         itemPanel.add(amenityLabel);
         itemPanel.setBorder(BorderFactory.createEmptyBorder(0,5,5,5));
         amenitiesPanel.add(itemPanel);
@@ -470,6 +786,13 @@ public class HotelManagerDisplay extends JFrame {
         //Item TextField
         itemAmenityTextField = new JTextField();
         itemAmenityTextField.setMaximumSize(new Dimension(50,20));
+        
+        //Ammenity cID Label
+        ammenCIDLabel = new JLabel("cID #: ");
+
+        //Ammenity cID TextField
+        ammenCustomerIDTextField = new JTextField();
+        ammenCustomerIDTextField.setMaximumSize(new Dimension(50,20));
 
         //Amount Label
         amountLabel = new JLabel("Amount: ");
@@ -493,6 +816,8 @@ public class HotelManagerDisplay extends JFrame {
         itemPanel.setBorder(BorderFactory.createEmptyBorder(0,5,5,5));
         itemPanel.add(itemLabel);
         itemPanel.add(itemAmenityTextField);
+        itemPanel.add(ammenCIDLabel);
+        itemPanel.add(ammenCustomerIDTextField);
         itemPanel.add(amountLabel);
         itemPanel.add(amountAmenityTextField);
         itemPanel.add(addAmenitiesButton);
@@ -501,6 +826,7 @@ public class HotelManagerDisplay extends JFrame {
 
         //JLabel for Amenity Items
         itemAmenityLabel = new JLabel("Amenity Items ");
+        itemAmenityLabel.setFont(new Font("Serif", Font.BOLD, 18));
 
         //JPanel for Amenity Items table title
         JPanel amenityTablePanel = new JPanel();
@@ -510,12 +836,13 @@ public class HotelManagerDisplay extends JFrame {
         amenitiesPanel.add(amenityTablePanel);
 
         //JTable for Amenities
-        amenitiesAmenityTable = new JTable(new AmenitiesTableModel());
+        amenitiesAmenityTable = new JTable(ammenityTableModel);
+        JScrollPane scrollPaneAmmen = new JScrollPane(amenitiesAmenityTable);
         amenitiesAmenityTable.setFillsViewportHeight(true);
         amenitiesAmenityTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 
         amenitiesPanel.add(amenitiesAmenityTable.getTableHeader(), BorderLayout.NORTH);
-        amenitiesPanel.add(amenitiesAmenityTable);
+        amenitiesPanel.add(scrollPaneAmmen);
 
 
         //Item Name Label for add
@@ -603,105 +930,13 @@ public class HotelManagerDisplay extends JFrame {
         setVisible(true);
     }
 
-    /**
-     * Class that allows me to implement a Custom Table model instead of the default.
-     */
-    class AmenitiesTableModel extends AbstractTableModel {
-        private String[] amenityColumnName = {"Amenity # ", "Item ", "Price " };
-        @Override
-        public int getRowCount() {
-            return amenities.size();
-        }
-
-        @Override
-        public int getColumnCount() {
-            return amenityColumnName.length;
-        }
-
-        @Override
-        public String getColumnName(int columnIndex) {
-            return amenityColumnName[columnIndex];
-        }
-
-        @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            Object value = null;
-            switch (columnIndex) {
-                case (0):
-                    value = amenities.get(rowIndex).getaID();
-                    break;
-                case(1):
-                    value = amenities.get(rowIndex).getDescription();
-                    break;
-                case(2):
-                    value = amenities.get(rowIndex).getPrice();
-                    break;
-            }
-            return value;
-        }
-
-        public Class getColumnClass(int c) {
-            return getValueAt(0, c).getClass();
-        }
-    }
-
-    /**
-     *
-     * Class that allows me to implement my own table model
-     */
-    class RoomsTableModel extends AbstractTableModel {
-
-        //Room var
-        private String[] roomColumnNames = {"Room #", "Type", "Price", "Description"};
-
-        @Override
-        public int getRowCount() {
-            return rooms.size();
-        }
-
-        @Override
-        public String getColumnName(int columnIndex) {
-            return roomColumnNames[columnIndex];
-        }
-
-        @Override
-        public int getColumnCount() {
-            return roomColumnNames.length;
-        }
-
-
-        @Override
-        public Object getValueAt(int rowIndex, int columnIndex) {
-            Object value = null;
-            switch (columnIndex) {
-
-                case (0):
-                    value = rooms.get(rowIndex).getRoomID();
-                    break;
-                case (1):
-                    value = rooms.get(rowIndex).getRoomType();
-                    break;
-                case (2):
-                    value = rooms.get(rowIndex).getPrice();
-                    break;
-                case (3):
-                    value = rooms.get(rowIndex).getDescription();
-                    break;
-            }
-            return value;
-        }
-
-        public Class getColumnClass(int c) {
-            return getValueAt(0, c).getClass();
-        }
-    }
-
 
     /**
      * Creates the Display
      * @param args
+     * @throws SQLException 
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         new HotelManagerDisplay();
     }
 }
