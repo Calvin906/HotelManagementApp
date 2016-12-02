@@ -38,7 +38,6 @@ public class HotelManagerDisplay extends JFrame {
     private JLabel itemPriceAmenityLabel;
     private JLabel roomsBookLabel;
     private JLabel roomsBookLabel2;
-    private JLabel allRBookLabel;
     private JLabel suitBookLabel;
     private JLabel basicBookLabel;
     private JLabel customerNameBookLabel;
@@ -46,7 +45,6 @@ public class HotelManagerDisplay extends JFrame {
     private JLabel cIDNameBookLabel;
     private JLabel customerEmailBookLabel;
     private JLabel customerCustomerBookLabel;
-    private JLabel allCBookLabel;
     private JLabel amountLabel;
     private JLabel bookRoomLabel;
     private JLabel customerLabel;
@@ -80,6 +78,7 @@ public class HotelManagerDisplay extends JFrame {
     private JButton searchAmenityButton;
     private JButton updateAmenityButton;
     private JButton deleteAmenityButton;
+    private JButton occupiedButton;
     private JScrollBar roomsScrollBar;
     private JScrollBar amenitiesScrollBar;
     private JTextField nameBookTextField;
@@ -98,8 +97,6 @@ public class HotelManagerDisplay extends JFrame {
     private JTextField addPriceAmenityTextField;
     private JTextField addItemAmenityTextField;
     private JCheckBox vipCustomerCheckbox;
-    private JCheckBox allRoomBookCheckbox;
-    private JCheckBox allCustomerBookCheckbox;
     private JCheckBox suiteBookCheckbox;
     private JCheckBox basicBookCheckbox;
 
@@ -147,20 +144,13 @@ public class HotelManagerDisplay extends JFrame {
         JScrollPane scrollPane = new JScrollPane(roomsBookTable);
         roomsBookTable.setFillsViewportHeight(true);
         roomsBookTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-        //roomPanel.add(roomsBookTable.getTableHeader(), BorderLayout.NORTH);
-        //roomPanel.add(roomsBookTable);
         roomPanel.add(roomsBookTable.getTableHeader(), BorderLayout.NORTH);
         roomPanel.add(scrollPane);
         
 
         //Another Room Label
         roomsBookLabel2 = new JLabel("Room:   ");
-
-        //All Label
-        allRBookLabel = new JLabel("All");
-
-        //All Room checkbox
-        allRoomBookCheckbox = new JCheckBox();
+        roomsBookLabel2.setFont(new Font("Serif", Font.BOLD, 16));
 
         //Suite Label
         suitBookLabel = new JLabel("Suite: ");
@@ -186,8 +176,6 @@ public class HotelManagerDisplay extends JFrame {
         roomBookPanel.setLayout(new BoxLayout(roomBookPanel, BoxLayout.LINE_AXIS));
         roomBookPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
         roomBookPanel.add(roomsBookLabel2);
-        roomBookPanel.add(allRBookLabel);
-        roomBookPanel.add(allRoomBookCheckbox);
         roomBookPanel.add(suitBookLabel);
         roomBookPanel.add(suiteBookCheckbox);
         roomBookPanel.add(basicBookLabel);
@@ -199,32 +187,27 @@ public class HotelManagerDisplay extends JFrame {
 
         //Customer Label
         customerCustomerBookLabel = new JLabel("Customer: ");
-
-        //All Customer Label
-        allCBookLabel = new JLabel("All: ");
-
-        //All Customer Checkbox
-        allCustomerBookCheckbox = new JCheckBox();
+        customerCustomerBookLabel.setFont(new Font("Serif", Font.BOLD, 16));
 
         //Name Label
         customerNameBookLabel = new JLabel("Name: ");
 
         //Name Text field
-        nameBookTextField = new JTextField();
+        nameBookTextField = new JTextField(20);
         nameBookTextField.setMaximumSize(new Dimension(55,20));
         
         //ID Label
         cIDNameBookLabel = new JLabel("cID: ");
 
         //ID Text field
-        cIDNameBookTextField = new JTextField();
+        cIDNameBookTextField = new JTextField(8);
         cIDNameBookTextField.setMaximumSize(new Dimension(55,20));
 
         //Email Customer Label
         customerEmailBookLabel = new JLabel("Email: ");
 
         //Email Text field
-        emailBookTextField = new JTextField();
+        emailBookTextField = new JTextField(25);
         emailBookTextField.setMaximumSize(new Dimension(55,20));
 
 
@@ -232,16 +215,16 @@ public class HotelManagerDisplay extends JFrame {
         customerBookPanel.setLayout(new BoxLayout(customerBookPanel, BoxLayout.LINE_AXIS));
         customerBookPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
         customerBookPanel.add(customerCustomerBookLabel);
-        customerBookPanel.add(allCBookLabel);
-        customerBookPanel.add(allCustomerBookCheckbox);
-        customerBookPanel.add(customerNameBookLabel);
-        customerBookPanel.add(nameBookTextField);
         
         customerBookPanel.add(cIDNameBookLabel);
         customerBookPanel.add(cIDNameBookTextField);
-        
+        customerBookPanel.add(new JLabel("   ")); //spacer label
+        customerBookPanel.add(customerNameBookLabel);
+        customerBookPanel.add(nameBookTextField);
+        customerBookPanel.add(new JLabel("   ")); //spacer label
         customerBookPanel.add(customerEmailBookLabel);
         customerBookPanel.add(emailBookTextField);
+        
         customerBookPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 
         //Rooms Book Button
@@ -249,7 +232,55 @@ public class HotelManagerDisplay extends JFrame {
         roomsBookButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            	//TO DO
+            	// Check that a room# and customer# were entered
+            	String roomNum = roomNumBookTextField.getText();
+            	String custNum = cIDNameBookTextField.getText();
+            	
+            	// If user entered room# and cust#
+            	if(!roomNum.isEmpty() && !custNum.isEmpty())
+            	{
+            		try
+            		{
+            			// Check that they entered numbers
+            			Integer.parseInt(roomNum);
+            			Integer.parseInt(custNum);
+            			
+            			// Call method to execute the query
+            			tableModel.setQueryBookRoom(custNum, roomNum);
+            			
+                    	/*
+                    	 * Update the room/customer table in the GUI to
+                    	 * reflect the model change
+                    	 */
+                    	
+                    	try {
+                    		tableModel.setQueryGetOccupiedRoomInfo(roomNum);
+        				} catch (IllegalStateException e1) {
+        					// TODO Auto-generated catch block
+        					e1.printStackTrace();
+        				} catch (SQLException e1) {
+        					// TODO Auto-generated catch block
+        					e1.printStackTrace();
+        				}
+            		}
+            		catch(NumberFormatException e1)
+            		{
+            			customerMessageLabel.setText("ROOM# & cID MUST BE INTEGER");
+            			customerMessageLabel.setForeground(Color.RED);
+            		} catch (IllegalStateException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+            	}
+            	else
+            	{
+            		// cId or room# textfield is blank. Print error message
+        			customerMessageLabel.setText("ROOM# OR cID CAN NOT BE BLANK");
+        			customerMessageLabel.setForeground(Color.RED);
+            	}
             }
         });
 
@@ -258,17 +289,101 @@ public class HotelManagerDisplay extends JFrame {
         searchRoomButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            	try {
-            		tableModel.setQueryGetAllRooms();
-				} catch (IllegalStateException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+            	
+            	String roomNum = roomNumBookTextField.getText();
+            	
+            	if(roomNum.isEmpty())
+            	{
+            		// Clear user message label
+            		customerMessageLabel.setText("          ");
+            	
+	            	try {
+	            		tableModel.setQueryGetAllRooms();
+					} catch (IllegalStateException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+            	}
+            	else
+            	{
+            		try
+            		{
+            			// Check that user entered a number
+            			Integer.parseInt(roomNum);
+            			
+            			// Call method that will execute query
+            			tableModel.setQueryGetRoomByNumber(roomNum);
+            		}
+            		catch(NumberFormatException e1){
+            			customerMessageLabel.setText("ROOM # MUST BE AN INTEGER");
+            			customerMessageLabel.setForeground(Color.RED);
+            			
+            		} catch (IllegalStateException e1) {
+            			customerMessageLabel.setText("Database Error");
+            			customerMessageLabel.setForeground(Color.RED);
+						e1.printStackTrace();
+					} catch (SQLException e1) {
+            			customerMessageLabel.setText("Database Error");
+            			customerMessageLabel.setForeground(Color.RED);
+						e1.printStackTrace();
+					}
+            	}
             }
         });
+        
+        occupiedButton = new JButton("Occupied");
+        occupiedButton.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+            	String roomNum = roomNumBookTextField.getText();
+            	
+            	if(roomNum.isEmpty())
+            	{
+            		// Clear user message label
+            		customerMessageLabel.setText("          ");
+            	
+	            	try {
+	            		tableModel.setQueryGetAllOccupied();
+					} catch (IllegalStateException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+            	}
+            	else
+            	{
+            		try
+            		{
+            			// Check that user entered a number
+            			Integer.parseInt(roomNum);
+            			
+            			// Call method that will execute query
+            			tableModel.setQueryGetOccupiedRoomInfo(roomNum);
+            		}
+            		catch(NumberFormatException e1){
+            			customerMessageLabel.setText("ROOM # MUST BE AN INTEGER");
+            			customerMessageLabel.setForeground(Color.RED);
+            			
+            		} catch (IllegalStateException e1) {
+            			customerMessageLabel.setText("Database Error");
+            			customerMessageLabel.setForeground(Color.RED);
+						e1.printStackTrace();
+					} catch (SQLException e1) {
+            			customerMessageLabel.setText("Database Error");
+            			customerMessageLabel.setForeground(Color.RED);
+						e1.printStackTrace();
+					}
+            	}
+				
+			}});
+
+        
         
         //Search for Customer Button
         searchCustomerButton = new JButton("Customer");
@@ -290,9 +405,14 @@ public class HotelManagerDisplay extends JFrame {
         JPanel buttonBookPanel = new JPanel();
         buttonBookPanel.setLayout(new BoxLayout(buttonBookPanel, BoxLayout.LINE_AXIS));
         buttonBookPanel.add(roomsBookButton);
+        buttonBookPanel.add(new JLabel("   ")); //spacer label
         buttonBookPanel.add(searchRoomButton);
+        buttonBookPanel.add(new JLabel("   ")); //spacer label
+        buttonBookPanel.add(occupiedButton);
+        buttonBookPanel.add(new JLabel("   ")); //spacer label
         buttonBookPanel.add(searchCustomerButton);
 
+        roomPanel.add(new JLabel("   ")); //Spacer - spaces panels away from JTable
         roomPanel.add(roomBookPanel);
         roomPanel.add(customerBookPanel);
         roomPanel.add(buttonBookPanel);
@@ -410,6 +530,7 @@ public class HotelManagerDisplay extends JFrame {
         addCustomerButton = new JButton("Add");
         customerButtonPanel.add(addCustomerButton);
         customerPanel.add(customerButtonPanel);
+        customerButtonPanel.add(new JLabel("   ")); //spacer label
 
         addCustomerButton.addActionListener(new ActionListener() {
             @Override
@@ -452,6 +573,7 @@ public class HotelManagerDisplay extends JFrame {
         //Update customer button
         updateCustomerButton = new JButton("Update");
         customerButtonPanel.add(updateCustomerButton);
+        customerButtonPanel.add(new JLabel("   ")); //spacer label
         customerPanel.add(customerButtonPanel);
 
         updateCustomerButton.addActionListener(new ActionListener() {
@@ -912,7 +1034,7 @@ public class HotelManagerDisplay extends JFrame {
         addButtonsAmenityPanel.add(createAmenityButton);
         addButtonsAmenityPanel.add(updateAmenityButton);
         addButtonsAmenityPanel.add(deleteAmenityButton);
-
+        amenitiesPanel.add(new JLabel(""));
         amenitiesPanel.add(addButtonsAmenityPanel);
 
         add(amenitiesPanel);
@@ -923,7 +1045,7 @@ public class HotelManagerDisplay extends JFrame {
 
 
         setLayout(new GridLayout(0, 2));
-        setSize(700, 600);
+        setSize(900, 800);
         setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 

@@ -16,7 +16,7 @@ public class HotelQueries {
 
 	private static final String URL = "jdbc:mysql://localhost/Hotel?useSSL=false";
 	private static final String USERNAME = "root";
-	private static final String PASSWORD = "password";
+	private static final String PASSWORD = "Frank$101";
 
 	private Connection connection; // manages connection
 
@@ -36,6 +36,10 @@ public class HotelQueries {
 	private PreparedStatement updateEmail;
 	private PreparedStatement updatePhone;
 	private PreparedStatement selectAllRooms;
+	private PreparedStatement selectRoomByNumber;
+	private PreparedStatement getRoomOccupiedInfo;
+	private PreparedStatement getAllOccupiedRooms;
+	private PreparedStatement bookRoom;
 	//< TO DO > add more queries
 
 	// constructor
@@ -63,6 +67,9 @@ public class HotelQueries {
 	         // create query that selects all entries Rooms table
 	         selectAllRooms = 
 	            connection.prepareStatement("SELECT * FROM room");
+	         
+	         // Select a room by room number
+	         selectRoomByNumber = connection.prepareStatement("SELECT * FROM room WHERE rID= ?");
 	         
 	         // delete customer using cID
 	         deleteCustomer =
@@ -105,6 +112,16 @@ public class HotelQueries {
 	         // Select all amenities
 	         selectAllAmenities = 
 	        		 connection.prepareStatement("SELECT * FROM ammenities");
+	         
+	         // Get customer name and check-in date of occupied room
+	         getRoomOccupiedInfo = 
+	        		 connection.prepareStatement("SELECT cNAME, rID, cID, occupiedDate from customer natural join occupied where rID= ?");
+	         
+	         // Books a room for a customer
+	         bookRoom = connection.prepareStatement("INSERT INTO occupied (cID, rID) VALUES (?, ?)");
+	         
+	         // Get all occupied rooms
+	         getAllOccupiedRooms = connection.prepareStatement("select cName, rID, cID, occupiedDate from customer natural join occupied");
 		}
 		catch (SQLException sqlException)
 		{
@@ -262,6 +279,28 @@ public class HotelQueries {
 	      
 	      return resultSet;
 	 }
+	
+	/*
+	 * Calls the getAllOccupiedRooms query and
+	 * returns a result set
+	 */
+	public ResultSet getAllOccupiedResultSet()
+	{
+	      ResultSet resultSet = null;
+	      
+	      try 
+	      {
+	         // executeQuery returns ResultSet containing matching entries
+	         resultSet = getAllOccupiedRooms.executeQuery(); 
+	         
+	      } 
+	      catch (SQLException sqlException)
+	      {
+	         sqlException.printStackTrace();         
+	      } 
+	      
+	      return resultSet;
+	 }
 	   
 	   
 	 /*
@@ -366,6 +405,9 @@ public class HotelQueries {
 	
 	 /*
 	  * Update a customer's email and phone
+	  * cID the customer ID
+	  * email the customers email
+	  * phone the customers phone
 	  */
 	public void updateCustomerEmailPhone(
 					String cID, String email, String phone)
@@ -460,6 +502,81 @@ public class HotelQueries {
 		    {
 		         sqlException.printStackTrace();         
 		    } 
+	}
+	
+	 /*
+	  * Get customer name and date room was booked of an
+	  * occupied room.
+	  * rID the room ID
+	  * returns ResultSet
+	  */
+	public ResultSet getOccupiedRoomInfo(String rID)
+	{
+		   ResultSet resultSet = null;
+		      
+		   try 
+		   {
+			   getRoomOccupiedInfo.setString(1, rID);
+			  		    	  
+		       // executeQuery
+			   resultSet = getRoomOccupiedInfo.executeQuery(); 
+		         
+		    } 
+		    catch (SQLException sqlException)
+		    {
+		         sqlException.printStackTrace();         
+		    }
+		   
+		   return resultSet;
+	}
+	
+	 /*
+	  * Selects a room by room number
+	  * rID the room ID
+	  * returns ResultSet
+	  */
+	public ResultSet selectRoomByNumber(String rID)
+	{
+		   ResultSet resultSet = null;
+		      
+		   try 
+		   {
+			   selectRoomByNumber.setString(1, rID);
+			  		    	  
+		       // executeQuery
+			   resultSet = selectRoomByNumber.executeQuery(); 
+		         
+		    } 
+		    catch (SQLException sqlException)
+		    {
+		         sqlException.printStackTrace();         
+		    }
+		   
+		   return resultSet;
+	}
+	
+	 /*
+	  * Books a room for a customer (inserts into occupied table).
+	  * cID the customer ID
+	  * rID the room ID
+	  */
+	public void bookRoom(String cID, String rID)
+	{
+		   ResultSet resultSet = null;
+		      
+		   try 
+		   {
+			   bookRoom.setString(1, cID);
+			   bookRoom.setString(2, rID);
+			  		    	  
+		       // executeQuery
+			   bookRoom.executeUpdate(); 
+		         
+		    } 
+		    catch (SQLException sqlException)
+		    {
+		         sqlException.printStackTrace();         
+		    }
 	}
 
 	// close the database connection
