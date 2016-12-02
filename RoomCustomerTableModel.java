@@ -205,6 +205,30 @@ public class RoomCustomerTableModel extends AbstractTableModel
    } 
    
    /*
+    * Calls the getAllOccupiedResultSet query method
+    * and updates the model
+    */
+   public void setQueryGetAllOccupied()
+		      throws SQLException, IllegalStateException 
+		   {
+		      // ensure database connection is available
+		      if (!connectedToDatabase) 
+		         throw new IllegalStateException("Not Connected to Database");
+		      
+		      resultSet = hq.getAllOccupiedResultSet();
+		      
+		      // obtain meta data for ResultSet
+		      metaData = resultSet.getMetaData();
+
+		      // determine number of rows in ResultSet
+		      resultSet.last(); // move to last row
+		      numberOfRows = resultSet.getRow(); // get row number      
+		      
+		      // notify JTable that model has changed
+		      fireTableStructureChanged();
+		   } 
+   
+   /*
     * Calls the deleteCustomerUsingID query method
     * and updates the model
     */
@@ -336,6 +360,73 @@ public class RoomCustomerTableModel extends AbstractTableModel
       
       hq.updateCustomerPhone(cID, phone);
             
+      // notify JTable that model has changed
+      fireTableStructureChanged();
+   }
+   
+   /*
+    * Calls the getOccupiedRoomInfo query method
+    * and updates the model
+    */
+   public void setQueryGetOccupiedRoomInfo(String rID)
+      throws SQLException, IllegalStateException 
+   {
+      // ensure database connection is available
+      if (!connectedToDatabase) 
+         throw new IllegalStateException("Not Connected to Database");
+      
+      resultSet = hq.getOccupiedRoomInfo(rID);
+      
+      // obtain meta data for ResultSet
+      metaData = resultSet.getMetaData();
+
+      // determine number of rows in ResultSet
+      resultSet.last(); // move to last row
+      numberOfRows = resultSet.getRow(); // get row number
+            
+      // notify JTable that model has changed
+      fireTableStructureChanged();
+   }
+   
+   /*
+    * Calls the selectRoomByNumber query method
+    * and updates the model
+    * rID the room ID
+    */
+   public void setQueryGetRoomByNumber(String rID)
+      throws SQLException, IllegalStateException 
+   {
+      // ensure database connection is available
+      if (!connectedToDatabase) 
+         throw new IllegalStateException("Not Connected to Database");
+      
+      resultSet = hq.selectRoomByNumber(rID);
+      
+      // obtain meta data for ResultSet
+      metaData = resultSet.getMetaData();
+
+      // determine number of rows in ResultSet
+      resultSet.last(); // move to last row
+      numberOfRows = resultSet.getRow(); // get row number
+            
+      // notify JTable that model has changed
+      fireTableStructureChanged();
+   }
+   
+   /*
+    * Calls the bookRoom query method and updates
+    * the model
+    */
+   public void setQueryBookRoom(String cID, String rID)
+      throws SQLException, IllegalStateException 
+   {
+      // ensure database connection is available
+      if (!connectedToDatabase) 
+         throw new IllegalStateException("Not Connected to Database");
+      
+      // execute the query
+      hq.bookRoom(cID, rID);
+                  
       // notify JTable that model has changed
       fireTableStructureChanged();
    }
