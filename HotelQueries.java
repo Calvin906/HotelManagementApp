@@ -635,11 +635,14 @@ public class HotelQueries {
 			orderAmenity.executeUpdate();
 		}
 		catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 	}
+	
+	/*
+	 * Create invoice for customer
+	 */ 
 	
 	// close the database connection
 	public void close()

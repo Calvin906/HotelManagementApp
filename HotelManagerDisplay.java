@@ -65,6 +65,7 @@ public class HotelManagerDisplay extends JFrame {
     private JLabel emailCustomerLabel;
     private JLabel checkoutLabel;
     private JLabel itemLabel;
+    private JLabel editAmenityItemLabel;
     private JButton roomsBookButton;
     private JButton searchRoomButton;
     private JButton searchCustomerButton;
@@ -81,6 +82,7 @@ public class HotelManagerDisplay extends JFrame {
     private JButton occupiedButton;
     private JScrollBar roomsScrollBar;
     private JScrollBar amenitiesScrollBar;
+    private JTextField editAmenityItemId;
     private JTextField nameBookTextField;
     private JTextField cIDNameBookTextField;
     private JTextField emailBookTextField;
@@ -967,13 +969,19 @@ public class HotelManagerDisplay extends JFrame {
         amenitiesPanel.add(amenitiesAmenityTable.getTableHeader(), BorderLayout.NORTH);
         amenitiesPanel.add(scrollPaneAmmen);
 
-
+        //Item number identifier for edit
+        editAmenityItemLabel = new JLabel("Item #: ");
+        
+        //Item text field id for update, delete
+        editAmenityItemId = new JTextField();
+        editAmenityItemId.setMaximumSize(new Dimension(50,20));
+        
         //Item Name Label for add
         itemNameAmenityLabel = new JLabel("Item Name: ");
 
         //Item TextField Name for add
         addItemAmenityTextField = new JTextField();
-        addItemAmenityTextField.setMaximumSize(new Dimension(70,20));
+        addItemAmenityTextField.setMaximumSize(new Dimension(60,20));
 
         //Item Price Label for add
         itemPriceAmenityLabel = new JLabel("Price: ");
@@ -985,6 +993,8 @@ public class HotelManagerDisplay extends JFrame {
         //add Items panel
         JPanel addItemsPanel = new JPanel();
         addItemsPanel.setLayout(new BoxLayout(addItemsPanel, BoxLayout.LINE_AXIS));
+        addItemsPanel.add(editAmenityItemLabel);
+        addItemsPanel.add(editAmenityItemId);
         addItemsPanel.add(itemNameAmenityLabel);
         addItemsPanel.add(addItemAmenityTextField);
         addItemsPanel.add(itemPriceAmenityLabel);
@@ -1046,7 +1056,7 @@ public class HotelManagerDisplay extends JFrame {
 
 
         setLayout(new GridLayout(0, 2));
-        setSize(900, 800);
+        setSize(900, 700);
         setResizable(false);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
