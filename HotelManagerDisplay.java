@@ -100,8 +100,9 @@ public class HotelManagerDisplay extends JFrame {
     private JCheckBox suiteBookCheckbox;
     private JCheckBox basicBookCheckbox;
 
+    private HotelQueries hotelQueries;
 
-    //Customer var
+    //Customer variables
     private ArrayList<Customer> customers;
     private ArrayList<Room> rooms;
     private ArrayList<Amenity> amenities;
@@ -111,14 +112,14 @@ public class HotelManagerDisplay extends JFrame {
         super("Hotel Manager");
 
         // hotel queries holds all DB queries
-        HotelQueries hotelQueries = new HotelQueries();
+         hotelQueries = new HotelQueries();
         
         // models for the DB connected JTables
         tableModel = new RoomCustomerTableModel();
         ammenityTableModel = new AmenityTableModel();
 
-        rooms = new ArrayList<>();
-        amenities = new ArrayList<>();
+        rooms = new ArrayList<Room>();
+        amenities = new ArrayList<Amenity>();
 
         /************************************************************************************/
 

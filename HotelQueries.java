@@ -16,23 +16,23 @@ public class HotelQueries {
 
 	private static final String URL = "jdbc:mysql://localhost/Hotel?useSSL=false";
 	private static final String USERNAME = "root";
-	private static final String PASSWORD = "Frank$101";
+	private static final String PASSWORD = "";
 
 	private Connection connection; // manages connection
 
 	/**
 	 * Below are all the queries our program will use.
 	 */
-	private PreparedStatement selectAllCustomers;
+	private PreparedStatement selectAllCustomers; 
 	private PreparedStatement selectAllAmenities;
-	private PreparedStatement selectCustomerByName;
-	private PreparedStatement insertNewCustomer;
+	private PreparedStatement selectCustomerByName; 
+	private PreparedStatement insertNewCustomer; 
 	private PreparedStatement deleteCustomer;
-	private PreparedStatement updateNameEmailPhone;
+	private PreparedStatement updateNameEmailPhone; 
 	private PreparedStatement updateNameEmail;
 	private PreparedStatement updateNamePhone;
 	private PreparedStatement updateEmailPhone;
-	private PreparedStatement updateCustomerName;
+	private PreparedStatement updateCustomerName; 
 	private PreparedStatement updateEmail;
 	private PreparedStatement updatePhone;
 	private PreparedStatement selectAllRooms;
@@ -40,7 +40,12 @@ public class HotelQueries {
 	private PreparedStatement getRoomOccupiedInfo;
 	private PreparedStatement getAllOccupiedRooms;
 	private PreparedStatement bookRoom;
+	
 	//< TO DO > add more queries
+	private PreparedStatement createInvoice;
+	private PreparedStatement orderAmenities;
+	private PreparedStatement addAmenity;
+	private PreparedStatement deleteAmenities;
 
 	// constructor
 	public HotelQueries()
@@ -122,6 +127,10 @@ public class HotelQueries {
 	         
 	         // Get all occupied rooms
 	         getAllOccupiedRooms = connection.prepareStatement("select cName, rID, cID, occupiedDate from customer natural join occupied");
+	         
+	         // Add amenity
+	         addAmenity = connection.prepareStatement("INSERT INTO ammenities(description, price) VALUES(?,?)");
+	         
 		}
 		catch (SQLException sqlException)
 		{
@@ -577,6 +586,22 @@ public class HotelQueries {
 		    {
 		         sqlException.printStackTrace();         
 		    }
+	}
+	
+	/*
+	 * Add amenity to database
+	 */
+	public void addAmenity(String desc, double price){
+		//set parameters, then execute query
+		try{
+			addAmenity.setString(0, desc);
+			addAmenity.setDouble(1, price);
+			
+			addAmenity.executeUpdate();
+		}
+		catch(SQLException sqlException){
+			sqlException.printStackTrace();
+		}
 	}
 
 	// close the database connection
