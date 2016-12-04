@@ -4,8 +4,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.ArrayList;
+import java.util.Date;
 /**
  *
  * CS157A Project
@@ -134,6 +137,11 @@ public class HotelQueries {
 	         
 	         // Order amenity
 	         orderAmenity = connection.prepareStatement("INSERT INTO ammenity_orders(aID, cID, amount) VALUES(?,?,?)");
+	         
+	         // Create Invoice
+	         createInvoice = connection.prepareStatement("SELECT * FROM (SELECT SUM(price * amount) AS amenityTotal " + 
+	         "FROM ammenities NATURAL JOIN ammenity_orders WHERE cID = ?) a1 " +
+	        	 "join (SELECT occupiedDate, price FROM occupied NATURAL JOIN room where cID = ?) a2");
 	         
 		}
 		catch (SQLException sqlException)
@@ -596,11 +604,12 @@ public class HotelQueries {
 	 * Add amenity to database
 	 */
 	public void addAmenity(String desc, double price){
-		//set parameters, then execute query
 		try{
+			//set parameters, then execute query
 			addAmenity.setString(1, desc);
 			addAmenity.setDouble(2, price);
 			
+			//execute query
 			addAmenity.executeUpdate();
 		}
 		catch(SQLException sqlException){
@@ -615,7 +624,9 @@ public class HotelQueries {
 		try {
 			//set parameter to identify amenity to delete
 			deleteAmenity.setInt(1, id);
-			deleteAmenity.executeQuery();
+			
+			//execute delete
+			deleteAmenity.executeUpdate();
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
@@ -632,6 +643,7 @@ public class HotelQueries {
 			orderAmenity.setInt(2, cID);
 			orderAmenity.setInt(3, amount);
 			
+			//execute order
 			orderAmenity.executeUpdate();
 		}
 		catch (SQLException e) {
@@ -641,8 +653,73 @@ public class HotelQueries {
 	}
 	
 	/*
-	 * Create invoice for customer
-	 */ 
+	 * Create invoice for customer. Returns array list with 2 doubles (amenityTotal, roomTotal, grandTotal)
+	 */
+	public List<Double> createInvoice(int cID){
+		List<Double> results = new ArrayList<Double>();
+		ResultSet resultSet = null;
+		double amenityTotal = 0;
+		double roomTotal = 0.0;
+		double grandTotal = 0.0;
+		int daysInRoom = 0;
+		double roomPrice = 0.0;
+		Timestamp stamp;
+		Date currentDate = new Date();
+		Date checkInDate;
+		
+		try {
+			//set customer ID as parameter 1 and 2
+			createInvoice.setInt(1, cID);
+			createInvoice.setInt(2, cID);
+			
+			//execute update
+			resultSet = createInvoice.executeQuery();
+			
+			//calculate totals
+			while (resultSet.next())
+			{
+				//pull amenity from column 1. If null, will equal 0
+				amenityTotal = resultSet.getInt("amenityTotal");
+				//pull room price
+				roomPrice = resultSet.getDouble("price");
+				
+				//pull timestamp, convert to Date
+				stamp = resultSet.getTimestamp("occupiedDate");
+				checkInDate = new Date(stamp.getTime());
+				
+				//call getDateDiff to calculate number of days stayed in room
+				daysInRoom = (int) getDateDiff(checkInDate, currentDate, TimeUnit.DAYS);
+				
+				//update room total using room price and days stayed
+				roomTotal += (double) (daysInRoom * roomPrice);
+			}
+			
+			results.set(0, amenityTotal);
+			results.set(1, roomTotal);
+			results.set(2, amenityTotal + roomTotal);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return results;
+	}
+	
+	/*
+	 * Helper method to calculate days between
+	 */
+	
+	/*
+	 * Get a diff between two dates
+	 * @param date1 the oldest date
+	 * @param date2 the newest date
+	 * @param timeUnit the unit in which you want the diff
+	 * @return the diff value, in the provided unit
+	 */
+	public static long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
+	    long diffInMillies = date2.getTime() - date1.getTime();
+	    return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
+	}
 	
 	// close the database connection
 	public void close()
