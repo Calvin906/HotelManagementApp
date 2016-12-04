@@ -40,12 +40,10 @@ public class HotelQueries {
 	private PreparedStatement getRoomOccupiedInfo;
 	private PreparedStatement getAllOccupiedRooms;
 	private PreparedStatement bookRoom;
-	
-	//< TO DO > add more queries
 	private PreparedStatement createInvoice;
-	private PreparedStatement orderAmenities;
+	private PreparedStatement orderAmenity;
 	private PreparedStatement addAmenity;
-	private PreparedStatement deleteAmenities;
+	private PreparedStatement deleteAmenity;
 
 	// constructor
 	public HotelQueries()
@@ -130,6 +128,12 @@ public class HotelQueries {
 	         
 	         // Add amenity
 	         addAmenity = connection.prepareStatement("INSERT INTO ammenities(description, price) VALUES(?,?)");
+	         
+	         // Delete amenity
+	         deleteAmenity = connection.prepareStatement("DELETE FROM ammenities WHERE aID = ?)");
+	         
+	         // Order amenity
+	         orderAmenity = connection.prepareStatement("INSERT INTO ammenity_orders(aID, cID, amount) VALUES(?,?,?)");
 	         
 		}
 		catch (SQLException sqlException)
@@ -594,8 +598,8 @@ public class HotelQueries {
 	public void addAmenity(String desc, double price){
 		//set parameters, then execute query
 		try{
-			addAmenity.setString(0, desc);
-			addAmenity.setDouble(1, price);
+			addAmenity.setString(1, desc);
+			addAmenity.setDouble(2, price);
 			
 			addAmenity.executeUpdate();
 		}
@@ -604,6 +608,39 @@ public class HotelQueries {
 		}
 	}
 
+	/*
+	 * Delete amenity with given id
+	 */
+	public void deleteAmenity(int id){
+		try {
+			//set parameter to identify amenity to delete
+			deleteAmenity.setInt(1, id);
+			deleteAmenity.executeQuery();
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/*
+	 * Order amenity
+	 */
+	public void orderAmenity(int aID, int cID, int amount){
+		try {
+			//set parameters to charge amenity to given customer
+			orderAmenity.setInt(1, aID);
+			orderAmenity.setInt(2, cID);
+			orderAmenity.setInt(3, amount);
+			
+			orderAmenity.executeUpdate();
+		}
+		catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	
 	// close the database connection
 	public void close()
 	{
