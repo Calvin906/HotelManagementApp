@@ -1034,8 +1034,29 @@ public class HotelManagerDisplay extends JFrame {
         deleteAmenityButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //TODO
-            }
+            	try{
+            		//pull number from text field, call query in table model to delete
+                int amenityToDelete = Integer.parseInt(editAmenityItemId.getText());
+                ammenityTableModel.setQueryDeleteAmenity(amenityToDelete);
+            	}
+                catch(NumberFormatException e1){
+        			customerMessageLabel.setText("Item # MUST BE AN INTEGER");
+        			customerMessageLabel.setForeground(Color.RED);
+        			
+        		} catch (IllegalStateException e1) {
+        			customerMessageLabel.setText("Database Error");
+        			customerMessageLabel.setForeground(Color.RED);
+					e1.printStackTrace();
+				} 
+            	catch(SQLException e1){
+            		customerMessageLabel.setText("Database Error");
+        			customerMessageLabel.setForeground(Color.RED);
+					e1.printStackTrace();
+            	}
+            		//notify user of successful deletion, clear text field
+                customerMessageLabel.setText("Amenity Successfully Deleted.");
+                editAmenityItemId.setText("");
+            }            
         });
 
         //Button Panel for adding
