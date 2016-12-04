@@ -603,7 +603,8 @@ public class HotelQueries {
 	/*
 	 * Add amenity to database
 	 */
-	public void addAmenity(String desc, double price){
+	public int addAmenity(String desc, double price){
+		int result = 0;
 		try{
 			//set parameters, then execute query
 			addAmenity.setString(1, desc);
@@ -611,10 +612,18 @@ public class HotelQueries {
 			
 			//execute query
 			addAmenity.executeUpdate();
+			
+			//pull new amenity Id to
+			ResultSet rs = addAmenity.getGeneratedKeys();
+			if(rs.next())
+			{
+				result = rs.getInt(1);
+			}
 		}
 		catch(SQLException sqlException){
 			sqlException.printStackTrace();
 		}
+		return result;
 	}
 
 	/*

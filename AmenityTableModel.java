@@ -157,6 +157,30 @@ public class AmenityTableModel extends AbstractTableModel
    }
    
    /*
+    * Calls the getAllAmenitiesResultSet() method
+    * and updates the model
+    */
+   public void setQueryGetAllAmenities()
+      throws SQLException, IllegalStateException 
+   {
+      // ensure database connection is available
+      if (!connectedToDatabase) 
+         throw new IllegalStateException("Not Connected to Database");
+      
+      resultSet = hq.getAllAmenitiesResultSet();
+      
+      // obtain meta data for ResultSet
+      metaData = resultSet.getMetaData();
+
+      // determine number of rows in ResultSet
+      resultSet.last(); // move to last row
+      numberOfRows = resultSet.getRow(); // get row number      
+      
+      // notify JTable that model has changed
+      fireTableStructureChanged();
+   } 
+   
+   /*
     * Calls the deleteCustomerUsingID query method
     * and updates the model
     */

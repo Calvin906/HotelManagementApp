@@ -82,7 +82,7 @@ public class HotelManagerDisplay extends JFrame {
     private JButton occupiedButton;
     private JScrollBar roomsScrollBar;
     private JScrollBar amenitiesScrollBar;
-    private JTextField editAmenityItemId;
+    private JTextField editAmenityItemTextField;
     private JTextField nameBookTextField;
     private JTextField cIDNameBookTextField;
     private JTextField emailBookTextField;
@@ -973,8 +973,8 @@ public class HotelManagerDisplay extends JFrame {
         editAmenityItemLabel = new JLabel("Item #: ");
         
         //Item text field id for update, delete
-        editAmenityItemId = new JTextField();
-        editAmenityItemId.setMaximumSize(new Dimension(50,20));
+        editAmenityItemTextField = new JTextField();
+        editAmenityItemTextField.setMaximumSize(new Dimension(50,20));
         
         //Item Name Label for add
         itemNameAmenityLabel = new JLabel("Item Name: ");
@@ -994,7 +994,7 @@ public class HotelManagerDisplay extends JFrame {
         JPanel addItemsPanel = new JPanel();
         addItemsPanel.setLayout(new BoxLayout(addItemsPanel, BoxLayout.LINE_AXIS));
         addItemsPanel.add(editAmenityItemLabel);
-        addItemsPanel.add(editAmenityItemId);
+        addItemsPanel.add(editAmenityItemTextField);
         addItemsPanel.add(itemNameAmenityLabel);
         addItemsPanel.add(addItemAmenityTextField);
         addItemsPanel.add(itemPriceAmenityLabel);
@@ -1007,7 +1007,7 @@ public class HotelManagerDisplay extends JFrame {
         searchAmenityButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //TODO
+                //check which field are set, and run proper search with given parameters
             }
         });
 
@@ -1016,7 +1016,33 @@ public class HotelManagerDisplay extends JFrame {
         createAmenityButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //TODO
+            	String name = addItemAmenityTextField.getText();
+            	String price = addPriceAmenityTextField.getText();
+            	double convertedPrice = Double.parseDouble(price);
+            	
+            	// Add customer to DB
+            	Integer id = hotelQueries.addAmenity(name, convertedPrice);
+            	
+            	editAmenityItemTextField.setText(id.toString());
+            	
+            	customerMessageLabel.setText("SUCCESS. aID# " + id.toString());
+            	
+            	// Clear text fields on form
+            	addPriceAmenityTextField.setText("");
+            	addItemAmenityTextField.setText("");
+            	
+            	
+            	/*
+            	 * Update the amenity table in the GUI to reflect model change
+            	 */
+            	
+            	try {
+            		ammenityTableModel.setQueryGetAllAmenities();
+				} catch (IllegalStateException e1) {
+					e1.printStackTrace();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
             }
         });
 
@@ -1036,7 +1062,7 @@ public class HotelManagerDisplay extends JFrame {
             public void actionPerformed(ActionEvent e) {
             	try{
             		//pull number from text field, call query in table model to delete
-                int amenityToDelete = Integer.parseInt(editAmenityItemId.getText());
+                int amenityToDelete = Integer.parseInt(editAmenityItemTextField.getText());
                 ammenityTableModel.setQueryDeleteAmenity(amenityToDelete);
             	}
                 catch(NumberFormatException e1){
@@ -1055,7 +1081,7 @@ public class HotelManagerDisplay extends JFrame {
             	}
             		//notify user of successful deletion, clear text field
                 customerMessageLabel.setText("Amenity Successfully Deleted.");
-                editAmenityItemId.setText("");
+                editAmenityItemTextField.setText("");
             }            
         });
 
