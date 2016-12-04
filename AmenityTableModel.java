@@ -156,6 +156,22 @@ public class AmenityTableModel extends AbstractTableModel
       fireTableStructureChanged();
    }
    
+   /*
+    * Calls the deleteCustomerUsingID query method
+    * and updates the model
+    */
+   public void setQueryDeleteAmenity(int aID)
+      throws SQLException, IllegalStateException 
+   {
+      // ensure database connection is available
+      if (!connectedToDatabase) 
+         throw new IllegalStateException("Not Connected to Database");
+         hq.deleteAmenity(aID);
+            
+      // notify JTable that model has changed
+      fireTableStructureChanged();
+   }
+   
    // close Statement and Connection               
    public void disconnectFromDatabase()            
    {              
