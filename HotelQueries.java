@@ -5,10 +5,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.ArrayList;
-import java.util.Date;
+
 /**
  *
  * CS157A Project
@@ -820,8 +821,8 @@ public class HotelQueries {
 		int daysInRoom = 0;
 		double roomPrice = 0.0;
 		Timestamp stamp;
-		Date currentDate = new Date();
-		Date checkInDate;
+		LocalDate today = LocalDate.now();
+		LocalDate checkInDate;
 		
 		try {
 			//set customer ID as parameter 1 and 2
@@ -839,12 +840,12 @@ public class HotelQueries {
 				//pull room price
 				roomPrice = resultSet.getDouble("price");
 				
-				//pull timestamp, convert to Date
+				//pull timestamp, convert to LocalDate
 				stamp = resultSet.getTimestamp("occupiedDate");
-				checkInDate = new Date(stamp.getTime());
+				checkInDate = stamp.toLocalDateTime().toLocalDate();
 				
-				//call getDateDiff to calculate number of days stayed in room
-				daysInRoom = (int) getDateDiff(checkInDate, currentDate, TimeUnit.DAYS);
+				//calculate number of days stayed in room
+				daysInRoom = (int) checkInDate.until(today, ChronoUnit.DAYS);
 				
 				//update room total using room price and days stayed
 				roomTotal += (double) (daysInRoom * roomPrice);
@@ -859,22 +860,6 @@ public class HotelQueries {
 		}
 		
 		return results;
-	}
-	
-	/*
-	 * Helper method to calculate days between
-	 */
-	
-	/*
-	 * Get a diff between two dates
-	 * @param date1 the oldest date
-	 * @param date2 the newest date
-	 * @param timeUnit the unit in which you want the diff
-	 * @return the diff value, in the provided unit
-	 */
-	public static long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
-	    long diffInMillies = date2.getTime() - date1.getTime();
-	    return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
 	}
 	
 	// close the database connection
