@@ -28,6 +28,8 @@ public class HotelQueries {
 	private PreparedStatement selectCustomerByName;
 	private PreparedStatement insertNewCustomer;
 	private PreparedStatement deleteCustomer;
+	private PreparedStatement deleteCustomerBeforeDate;
+	private PreparedStatement deleteVIPBeforeDate;
 	private PreparedStatement updateNameEmailPhone;
 	private PreparedStatement updateNameEmail;
 	private PreparedStatement updateNamePhone;
@@ -37,9 +39,14 @@ public class HotelQueries {
 	private PreparedStatement updatePhone;
 	private PreparedStatement selectAllRooms;
 	private PreparedStatement selectRoomByNumber;
+	private PreparedStatement selectSuiteRooms;
 	private PreparedStatement getRoomOccupiedInfo;
 	private PreparedStatement getAllOccupiedRooms;
 	private PreparedStatement bookRoom;
+	private PreparedStatement occupiedHavingGreaterThan;
+	private PreparedStatement archiveCustomerData;
+	private PreparedStatement showArchive;
+	private PreparedStatement getNewestCid;
 	//< TO DO > add more queries
 
 	// constructor
@@ -49,10 +56,19 @@ public class HotelQueries {
 		{
 			connection =
 					DriverManager.getConnection(URL, USERNAME, PASSWORD);
+			
+			// Archive customer table data to archive table
+			archiveCustomerData = connection.prepareStatement("insert into archive "
+					+ "(cID, cName, email, phone, num_rooms, updatedOn, has_spent) "
+					+ "select * from customer where updatedOn < ?");
+			
+			// Select everything from archive
+			showArchive = connection.prepareStatement("SELECT * FROM archive");
 
 			// create query that selects all entries in the Customer table
 			selectAllCustomers =
-					connection.prepareStatement("SELECT cID, cNAME, email, phone, num_rooms FROM customer");
+					connection.prepareStatement("SELECT cID, cNAME, email, phone, num_rooms, "
+							+ "updatedOn FROM customer");
 
 			// create query that selects entries with a specific last name
 			selectCustomerByName = connection.prepareStatement(
@@ -61,8 +77,8 @@ public class HotelQueries {
 			// create insert that adds a new entry into the database
 			insertNewCustomer = connection.prepareStatement(
 					"INSERT INTO customer " +
-							"(cName, email, phone) " +
-							"VALUES (?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+							"(cName, email, phone, updatedOn) " +
+							"VALUES (?, ?, ?, NOW())", Statement.RETURN_GENERATED_KEYS);
 			
 	         // create query that selects all entries Rooms table
 	         selectAllRooms = 
@@ -71,9 +87,22 @@ public class HotelQueries {
 	         // Select a room by room number
 	         selectRoomByNumber = connection.prepareStatement("SELECT * FROM room WHERE rID= ?");
 	         
+	         // Select all rooms that are a Suite. Uses intersection set operation
+	         selectSuiteRooms = connection.prepareStatement("select distinct r1.rID, r1.room_type, r1.description, r1.price "
+	         		+ "from room r1, room r2 where r1.rID = r2.rID "
+	         		+ "and r1.room_type = 'Suite'");
+	         
 	         // delete customer using cID
 	         deleteCustomer =
 	        		 connection.prepareStatement("DELETE FROM customer WHERE cID = ?");
+	         
+	         // delete a customer if their updatedOn is prior to passed date
+	         deleteCustomerBeforeDate = 
+	        		 connection.prepareStatement("delete from customer where updatedOn < ?");
+	         
+	         // delete a VIP based on their Customer updatedON date
+	         deleteVIPBeforeDate = connection.prepareStatement("delete from vip "
+	         		+ "where cID in(select cID from customer where updatedOn < ?)");
 	         
 	         // Update a customer's name, email, and phone
 	         updateNameEmailPhone = 
@@ -115,13 +144,24 @@ public class HotelQueries {
 	         
 	         // Get customer name and check-in date of occupied room
 	         getRoomOccupiedInfo = 
-	        		 connection.prepareStatement("SELECT cNAME, rID, cID, occupiedDate from customer natural join occupied where rID= ?");
+	        		 connection.prepareStatement("SELECT cNAME, rID, cID, occupiedDate "
+	        		 		+ "from customer natural join occupied where rID= ?");
 	         
 	         // Books a room for a customer
 	         bookRoom = connection.prepareStatement("INSERT INTO occupied (cID, rID) VALUES (?, ?)");
 	         
 	         // Get all occupied rooms
-	         getAllOccupiedRooms = connection.prepareStatement("select cName, rID, cID, occupiedDate from customer natural join occupied");
+	         getAllOccupiedRooms = connection.prepareStatement("select cName, rID, cID, occupiedDate "
+	         		+ "from customer natural join occupied");
+	         
+	         // Selects all customers that have booked (occupied) more than x rooms
+	         occupiedHavingGreaterThan = connection.prepareStatement("select cID, rID as Room, cName as Name, occupiedDate "
+	         		+ "from occupied natural join customer "
+	         		+ "where cID in(select cID from occupied group by cID having count(*) > ?)");
+	         
+	         // Gets the most recently added customer cID from customer table
+	         // Uses the SQL max aggregation function
+	         getNewestCid = connection.prepareStatement("select max(cID) from customer");
 		}
 		catch (SQLException sqlException)
 		{
@@ -215,6 +255,29 @@ public class HotelQueries {
 	}
 	
 	/*
+	 * Executes query that gets the newest cID added to
+	 * the customer table. The query used uses a SQL
+	 * aggregation function
+	 */
+	public ResultSet getNewestCustomerID()
+	{
+	   ResultSet resultSet = null;
+	      
+	   try 
+	   {
+	      // executeQuery
+	      resultSet = getNewestCid.executeQuery(); 
+	         
+	   } 
+	   catch (SQLException sqlException)
+	   {
+	      sqlException.printStackTrace();         
+	   } 
+	      
+	   return resultSet;
+	}
+	
+	/*
 	 * Calls the selecAllRooms query and
 	 * returns the result set
 	*/
@@ -226,6 +289,28 @@ public class HotelQueries {
 	   {
 	      // executeQuery
 	      resultSet = selectAllRooms.executeQuery(); 
+	         
+	   } 
+	   catch (SQLException sqlException)
+	   {
+	      sqlException.printStackTrace();         
+	   } 
+	      
+	   return resultSet;
+	}
+	
+	/*
+	 * Selects all rooms that are suites. The query
+	 * involved uses an intersection set operation
+	 */
+	public ResultSet getAllSuiteRooms()
+	{
+	   ResultSet resultSet = null;
+	      
+	   try 
+	   {
+	      // executeQuery
+	      resultSet = selectSuiteRooms.executeQuery(); 
 	         
 	   } 
 	   catch (SQLException sqlException)
@@ -317,6 +402,27 @@ public class HotelQueries {
 		    	  
 		       // executeQuery
 		       deleteCustomer.executeUpdate(); 
+		         
+		    } 
+		    catch (SQLException sqlException)
+		    {
+		         sqlException.printStackTrace();         
+		    } 
+	}
+	
+	 /*
+	  * Delete a Customer before a given date
+	  */
+	public void deleteCustomerBeforeDate(String date)
+	{
+		      
+		   try 
+		   {
+			   // set the cID in the query
+			   deleteCustomerBeforeDate.setString(1, date);
+		    	  
+		       // executeQuery
+			   deleteCustomerBeforeDate.executeUpdate(); 
 		         
 		    } 
 		    catch (SQLException sqlException)
@@ -504,6 +610,29 @@ public class HotelQueries {
 		    } 
 	}
 	
+	/*
+	 * Deletes a VIP based on their Customer
+	 * updatedON date
+	 */
+	public void deleteVIPBeforeDate(String date)
+	{
+		   ResultSet resultSet = null;
+		      
+		   try 
+		   {
+			   // set the cID in the query
+			   deleteVIPBeforeDate.setString(1, date);
+		    	  
+		       // executeQuery
+			   deleteVIPBeforeDate.executeUpdate(); 
+		         
+		    } 
+		    catch (SQLException sqlException)
+		    {
+		         sqlException.printStackTrace();         
+		    } 
+	}
+	
 	 /*
 	  * Get customer name and date room was booked of an
 	  * occupied room.
@@ -560,9 +689,11 @@ public class HotelQueries {
 	  * cID the customer ID
 	  * rID the room ID
 	  */
-	public void bookRoom(String cID, String rID)
+	public String bookRoom(String cID, String rID)
 	{
 		   ResultSet resultSet = null;
+		   
+		   Integer code = 0;
 		      
 		   try 
 		   {
@@ -575,8 +706,79 @@ public class HotelQueries {
 		    } 
 		    catch (SQLException sqlException)
 		    {
+		    	// capture error code to return
+		    	code = sqlException.getErrorCode();
+		        sqlException.printStackTrace();         
+		    }
+		   
+		    return Integer.toString(code);
+	}
+	
+	
+	/*
+	 * Select Customers that are occupying greater than
+	 * x rooms.
+	 * returns ResultSet
+	 */
+	public ResultSet selectOccupiedHavingGreaterThan(String amount)
+	{
+		   ResultSet resultSet = null;
+		      
+		   try 
+		   {
+			   occupiedHavingGreaterThan.setString(1, amount);
+			  		    	  
+		       // executeQuery
+			   resultSet = occupiedHavingGreaterThan.executeQuery(); 
+		         
+		    } 
+		    catch (SQLException sqlException)
+		    {
 		         sqlException.printStackTrace();         
 		    }
+		   
+		   return resultSet;
+	}
+	
+	/*
+	 * Calls the archiveCustomerData query to archive
+	 * customer data
+	 */
+	public void archiveCustomers(String date)
+	{   
+		   try 
+		   {
+			   //assign date to prepared statement place holder
+			   archiveCustomerData.setString(1, date);  	  
+		       // executeQuery
+			   archiveCustomerData.executeUpdate(); 
+		         
+		    } 
+		    catch (SQLException sqlException)
+		    {
+		        sqlException.printStackTrace();         
+		    }
+	}
+	
+	/*
+	 * Select everything from archive table
+	 */
+	public ResultSet selectAllArchive()
+	{
+		   ResultSet resultSet = null;
+		      
+		   try 
+		   {  		    	  
+		       // executeQuery
+			   resultSet = showArchive.executeQuery(); 
+		         
+		    } 
+		    catch (SQLException sqlException)
+		    {
+		         sqlException.printStackTrace();         
+		    }
+		   
+		   return resultSet;
 	}
 
 	// close the database connection

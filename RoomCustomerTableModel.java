@@ -181,6 +181,32 @@ public class RoomCustomerTableModel extends AbstractTableModel
    }
    
    /*
+    * Calls the method in HotelQueries that executes
+    * the query to select all rooms that are a
+    * suite. That query uses an intersectio set
+    * operation.
+    */
+   public void setQueryGetAllSuiteRooms()
+		      throws SQLException, IllegalStateException 
+   {
+	   // ensure database connection is available
+	   if (!connectedToDatabase) 
+		   throw new IllegalStateException("Not Connected to Database");
+		      
+	   resultSet = hq.getAllSuiteRooms();
+		      
+	   // obtain meta data for ResultSet
+	   metaData = resultSet.getMetaData();
+
+	   // determine number of rows in ResultSet
+	   resultSet.last(); // move to last row
+	   numberOfRows = resultSet.getRow(); // get row number      
+		      
+	   // notify JTable that model has changed
+	   fireTableStructureChanged();
+	}
+   
+   /*
     * Calls the getAllCustomersResultSet() method
     * and updates the model
     */
@@ -202,7 +228,31 @@ public class RoomCustomerTableModel extends AbstractTableModel
       
       // notify JTable that model has changed
       fireTableStructureChanged();
-   } 
+   }
+   
+   /*
+    * Calls the query in HotelQuerries that gets the
+    * newest cID from the customer table
+    */
+   public void setQueryGetNewestCid()
+		      throws SQLException, IllegalStateException 
+	{
+		  // ensure database connection is available
+		  if (!connectedToDatabase) 
+		     throw new IllegalStateException("Not Connected to Database");
+		      
+		  resultSet = hq.getNewestCustomerID();
+		      
+		  // obtain meta data for ResultSet
+		  metaData = resultSet.getMetaData();
+
+		  // determine number of rows in ResultSet
+		  resultSet.last(); // move to last row
+		  numberOfRows = resultSet.getRow(); // get row number      
+		      
+		  // notify JTable that model has changed
+		  fireTableStructureChanged();
+	} 
    
    /*
     * Calls the getAllOccupiedResultSet query method
@@ -417,7 +467,7 @@ public class RoomCustomerTableModel extends AbstractTableModel
     * Calls the bookRoom query method and updates
     * the model
     */
-   public void setQueryBookRoom(String cID, String rID)
+   public String setQueryBookRoom(String cID, String rID)
       throws SQLException, IllegalStateException 
    {
       // ensure database connection is available
@@ -425,10 +475,116 @@ public class RoomCustomerTableModel extends AbstractTableModel
          throw new IllegalStateException("Not Connected to Database");
       
       // execute the query
-      hq.bookRoom(cID, rID);
+      String result = hq.bookRoom(cID, rID);
                   
       // notify JTable that model has changed
       fireTableStructureChanged();
+      
+      // Return result
+      return result;
+   }
+   
+   /*
+    * Calls the selectOccupiedHavingGreaterThan method in HotelQueries
+    * This method calls a query that selects customers that are occupying 
+    * greater than x rooms
+    */
+   public void setQuerySelectOccupiedHavingGreaterThan(String amount) 
+		      throws SQLException, IllegalStateException 
+   {
+		      // ensure database connection is available
+		      if (!connectedToDatabase) 
+		         throw new IllegalStateException("Not Connected to Database");
+		      
+		      resultSet = hq.selectOccupiedHavingGreaterThan(amount);
+		      
+		      // obtain meta data for ResultSet
+		      metaData = resultSet.getMetaData();
+
+		      // determine number of rows in ResultSet
+		      resultSet.last(); // move to last row
+		      numberOfRows = resultSet.getRow(); // get row number      
+		      
+		      // notify JTable that model has changed
+		      fireTableStructureChanged();
+	}
+   
+   /*
+    * Calls the selectAllArchive query method in HotelQueries
+    */
+   public void setQuerySelectAllArchive() 
+		      throws SQLException, IllegalStateException 
+   {
+		      // ensure database connection is available
+		      if (!connectedToDatabase) 
+		         throw new IllegalStateException("Not Connected to Database");
+		      
+		      resultSet = hq.selectAllArchive();
+		      
+		      // obtain meta data for ResultSet
+		      metaData = resultSet.getMetaData();
+
+		      // determine number of rows in ResultSet
+		      resultSet.last(); // move to last row
+		      numberOfRows = resultSet.getRow(); // get row number      
+		      
+		      // notify JTable that model has changed
+		      fireTableStructureChanged();
+	}
+   
+   /*
+    * Calls the query in HotelQueries to archive a
+    * Customer based on their updatedON date
+    */
+   public void setQueryArchiveCustomers(String date)
+		      throws SQLException, IllegalStateException 
+   {
+		      // ensure database connection is available
+		      if (!connectedToDatabase) 
+		         throw new IllegalStateException("Not Connected to Database");
+		      
+		      // execute the query
+		      hq.archiveCustomers(date);
+		                  
+		      // notify JTable that model has changed
+		      fireTableStructureChanged();
+   }
+   
+   /*
+    * Calls the query in HotelQueries to delete a VIP
+    * based on their Customer updatedON date
+    */
+   public void setQueryDeleteVIPBeforeDate(String date)
+		      throws SQLException, IllegalStateException 
+   {
+		      // ensure database connection is available
+		      if (!connectedToDatabase) 
+		         throw new IllegalStateException("Not Connected to Database");
+		      
+		      // execute the query
+		      hq.deleteVIPBeforeDate(date);
+		                  
+		      // notify JTable that model has changed
+		      fireTableStructureChanged();
+   }
+   
+   
+   /*
+    * Calls the query in HotelQueries that deletes
+    * a Customer based on their updatedON date
+    */
+   public void setQueryDeleteCustomerBeforeDate(String date)
+		      throws SQLException, IllegalStateException 
+   {
+		      // ensure database connection is available
+		      if (!connectedToDatabase) 
+		         throw new IllegalStateException("Not Connected to Database");
+		      
+		      // execute the query
+		      hq.deleteCustomerBeforeDate(date);
+		                  
+		      // notify JTable that model has changed
+		      fireTableStructureChanged();
    }
    
    // close Statement and Connection               
