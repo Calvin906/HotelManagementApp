@@ -181,10 +181,58 @@ public class AmenityTableModel extends AbstractTableModel
    } 
    
    /*
+    * Calls the selectAmenityById() method
+    * and updates the model
+    */
+   public void setQuerySelectAmenityById(int id)
+      throws SQLException, IllegalStateException 
+   {
+      // ensure database connection is available
+      if (!connectedToDatabase) 
+         throw new IllegalStateException("Not Connected to Database");
+      
+      resultSet = hq.selectAmenityById(id);
+      
+      // obtain meta data for ResultSet
+      metaData = resultSet.getMetaData();
+
+      // determine number of rows in ResultSet
+      resultSet.last(); // move to last row
+      numberOfRows = resultSet.getRow(); // get row number      
+      
+      // notify JTable that model has changed
+      fireTableStructureChanged();
+   } 
+   
+   /*
+    * Calls the selectAmenityByName() method
+    * and updates the model
+    */
+   public void setQuerySelectAmenityByName(String name)
+      throws SQLException, IllegalStateException 
+   {
+      // ensure database connection is available
+      if (!connectedToDatabase) 
+         throw new IllegalStateException("Not Connected to Database");
+      
+      resultSet = hq.selectAmenityByName(name);
+      
+      // obtain meta data for ResultSet
+      metaData = resultSet.getMetaData();
+
+      // determine number of rows in ResultSet
+      resultSet.last(); // move to last row
+      numberOfRows = resultSet.getRow(); // get row number      
+      
+      // notify JTable that model has changed
+      fireTableStructureChanged();
+   } 
+   
+   /*
     * Calls the updateAmenityDescription query method
     * and updates the model
     */
-   public void setQueryUpdateAmenityDescription(String aID, String desc)
+   public void setQueryUpdateAmenityDescription(int aID, String desc)
       throws SQLException, IllegalStateException 
    {
       // ensure database connection is available
@@ -201,7 +249,7 @@ public class AmenityTableModel extends AbstractTableModel
     * Calls the updateAmmenityPrice query method
     * and updates the model
     */
-   public void setQueryUpdateAmenityPrice(String aID, String price)
+   public void setQueryUpdateAmenityPrice(int aID, String price)
       throws SQLException, IllegalStateException 
    {
       // ensure database connection is available
@@ -219,7 +267,7 @@ public class AmenityTableModel extends AbstractTableModel
     * Calls the updateAmenity query method
     * and updates the model
     */
-   public void setQueryUpdateAmenityDescriptionPrice(String aID, String desc, String price)
+   public void setQueryUpdateAmenityDescriptionPrice(int aID, String desc, String price)
       throws SQLException, IllegalStateException 
    {
       // ensure database connection is available
@@ -236,7 +284,7 @@ public class AmenityTableModel extends AbstractTableModel
     * Calls the deleteCustomerUsingID query method
     * and updates the model
     */
-   public void setQueryDeleteAmenity(String aID)
+   public void setQueryDeleteAmenity(int aID)
       throws SQLException, IllegalStateException 
    {
       // ensure database connection is available

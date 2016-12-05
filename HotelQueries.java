@@ -46,6 +46,8 @@ public class HotelQueries {
 	private PreparedStatement createInvoice;
 	private PreparedStatement orderAmenity;
 	private PreparedStatement addAmenity;
+	private PreparedStatement selectAmenityById;
+	private PreparedStatement selectAmenityByName;
 	private PreparedStatement deleteAmenity;
 	private PreparedStatement updateAmenityDescription;
 	private PreparedStatement updateAmenityPrice;
@@ -134,6 +136,12 @@ public class HotelQueries {
 	         
 	         // Add amenity
 	         addAmenity = connection.prepareStatement("INSERT INTO ammenities(description, price) VALUES(?,?)");
+	         
+	         //select amenity by id
+	         selectAmenityById = connection.prepareStatement("SELECT * FROM ammenities WHERE aID = ?");
+	         
+	         //selectt amenity by name
+	         selectAmenityByName = connection.prepareStatement("SELECT * FROM ammenities WHERE description = ?");
 	         
 	         // Update Amenity name
 	         updateAmenityDescriptionPrice = 
@@ -646,9 +654,61 @@ public class HotelQueries {
 	}
 
 	/*
+	  * Selects amenity by id number
+	  * aID the amenity ID
+	  * returns ResultSet
+	  */
+	public ResultSet selectAmenityById(int aID)
+	{
+		   ResultSet resultSet = null;
+		      
+		   try 
+		   {
+			   //set parameters
+			   selectAmenityById.setInt(1, aID);
+			  		    	  
+		       // executeQuery
+			   resultSet = selectAmenityById.executeQuery(); 
+		         
+		    } 
+		    catch (SQLException sqlException)
+		    {
+		         sqlException.printStackTrace();         
+		    }
+		   
+		   return resultSet;
+	}
+	
+	/*
+	  * Selects amenity by id number
+	  * aID the amenity ID
+	  * returns ResultSet
+	  */
+	public ResultSet selectAmenityByName(String name)
+	{
+		   ResultSet resultSet = null;
+		      
+		   try 
+		   {
+			   //set parameters
+			   selectAmenityById.setString(1, name);
+			  		    	  
+		       // executeQuery
+			   resultSet = selectAmenityByName.executeQuery(); 
+		         
+		    } 
+		    catch (SQLException sqlException)
+		    {
+		         sqlException.printStackTrace();         
+		    }
+		   
+		   return resultSet;
+	}
+	
+	/*
 	  * Update amenity price and description
 	  */
-	public void updateAmenityDescriptionPrice(String aID, String desc, String price)
+	public void updateAmenityDescriptionPrice(int aID, String desc, String price)
 	{
 		      
 		   try 
@@ -656,7 +716,7 @@ public class HotelQueries {
 			   //set parameters
 			   updateAmenityDescription.setString(1, desc);
 			   updateAmenityDescription.setString(2, price);
-			   updateAmenityDescription.setString(3, aID);
+			   updateAmenityDescription.setInt(3, aID);
 		    	  
 		       // executeQuery
 			   updateAmenityDescriptionPrice.executeUpdate(); 
@@ -671,14 +731,14 @@ public class HotelQueries {
 	/*
 	  * Update a customer's name
 	  */
-	public void updateAmenityDescription(String aID, String desc)
+	public void updateAmenityDescription(int aID, String desc)
 	{
 		      
 		   try 
 		   {	   
 			   //set parameters
 			   updateAmenityDescription.setString(1, desc);
-			   updateAmenityDescription.setString(2, aID);
+			   updateAmenityDescription.setInt(2, aID);
 		    	  
 		       // executeQuery
 			   updateAmenityDescription.executeUpdate(); 
@@ -693,14 +753,14 @@ public class HotelQueries {
 	/*
 	  * Update a customer's name
 	  */
-	public void updateAmenityPrice(String aID, String price)
+	public void updateAmenityPrice(int aID, String price)
 	{
 		      
 		   try 
 		   {	   
 			   //set parameters
 			   updateAmenityPrice.setString(1, price);
-			   updateAmenityPrice.setString(2, aID);
+			   updateAmenityPrice.setInt(2, aID);
 		    	  
 		       // executeQuery
 			   updateAmenityPrice.executeUpdate(); 
@@ -716,10 +776,10 @@ public class HotelQueries {
 	/*
 	 * Delete amenity with given id
 	 */
-	public void deleteAmenity(String id){
+	public void deleteAmenity(int id){
 		try {
 			//set parameter to identify amenity to delete
-			deleteAmenity.setString(1, id);
+			deleteAmenity.setInt(1, id);
 			
 			//execute delete
 			deleteAmenity.executeUpdate();
