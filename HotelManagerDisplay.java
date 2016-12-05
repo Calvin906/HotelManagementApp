@@ -928,7 +928,32 @@ public class HotelManagerDisplay extends JFrame {
         addAmenitiesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //TODO
+                String amenity = itemAmenityTextField.getText();
+                String custId = ammenCustomerIDTextField.getText();
+                String amount = amountAmenityTextField.getText();
+                
+                //clear text fields
+                itemAmenityTextField.setText("");
+                ammenCustomerIDTextField.setText("");
+                amountAmenityTextField.setText("");
+                
+                //check that all fields have been set, notify user if any are empty
+                if(amenity.isEmpty() || custId.isEmpty() || amount.isEmpty()){
+                	customerMessageLabel.setText("AMENITY ID, CUSTOMER ID, AND AMOUNT MANDATORY");
+        			customerMessageLabel.setForeground(Color.RED);
+        			return;
+                }
+                //add amenity charges to customer
+                else{
+                	//parse int values from text fields
+                	int convertedAmenityId = Integer.parseInt(amenity);
+                	int convertedCustomerId = Integer.parseInt(custId);
+                	int convertedAmount = Integer.parseInt(amount);
+                	
+                	hotelQueries.orderAmenity(convertedAmenityId, convertedCustomerId, convertedAmount);
+                	customerMessageLabel.setText("Order placed successfully");
+        			customerMessageLabel.setForeground(Color.RED);
+                }
             }
         });
 
