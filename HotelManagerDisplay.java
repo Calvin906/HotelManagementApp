@@ -1020,7 +1020,7 @@ public class HotelManagerDisplay extends JFrame {
             	String price = addPriceAmenityTextField.getText();
             	double convertedPrice = Double.parseDouble(price);
             	
-            	// Add customer to DB
+            	// Add amenity to DB
             	Integer id = hotelQueries.addAmenity(name, convertedPrice);
             	
             	editAmenityItemTextField.setText(id.toString());
@@ -1060,10 +1060,7 @@ public class HotelManagerDisplay extends JFrame {
                 	//notify user of invalid parameter
                 	return;
                 }
-                
-                	//convert id string to int
-                	int aID = Integer.parseInt(id);
-                		
+                                		
                 	//Check if name and price both not empty
                 	if(!name.isEmpty() && !price.isEmpty())
                     	{
@@ -1101,7 +1098,7 @@ public class HotelManagerDisplay extends JFrame {
                     	}
                     	
                     	/*
-                    	 * Update the room/customer table in the GUI to
+                    	 * Update ammenity table in the GUI to
                     	 * reflect the model update
                     	 */
                     	
@@ -1132,7 +1129,7 @@ public class HotelManagerDisplay extends JFrame {
             public void actionPerformed(ActionEvent e) {
             	try{
             		//pull number from text field, call query in table model to delete
-                int amenityToDelete = Integer.parseInt(editAmenityItemTextField.getText());
+                String amenityToDelete = editAmenityItemTextField.getText();
                 ammenityTableModel.setQueryDeleteAmenity(amenityToDelete);
             	}
                 catch(NumberFormatException e1){

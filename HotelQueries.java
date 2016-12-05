@@ -716,10 +716,10 @@ public class HotelQueries {
 	/*
 	 * Delete amenity with given id
 	 */
-	public void deleteAmenity(int id){
+	public void deleteAmenity(String id){
 		try {
 			//set parameter to identify amenity to delete
-			deleteAmenity.setInt(1, id);
+			deleteAmenity.setString(1, id);
 			
 			//execute delete
 			deleteAmenity.executeUpdate();

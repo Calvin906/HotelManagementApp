@@ -236,7 +236,7 @@ public class AmenityTableModel extends AbstractTableModel
     * Calls the deleteCustomerUsingID query method
     * and updates the model
     */
-   public void setQueryDeleteAmenity(int aID)
+   public void setQueryDeleteAmenity(String aID)
       throws SQLException, IllegalStateException 
    {
       // ensure database connection is available
