@@ -181,6 +181,58 @@ public class AmenityTableModel extends AbstractTableModel
    } 
    
    /*
+    * Calls the updateAmenityDescription query method
+    * and updates the model
+    */
+   public void setQueryUpdateAmenityDescription(String aID, String desc)
+      throws SQLException, IllegalStateException 
+   {
+      // ensure database connection is available
+      if (!connectedToDatabase) 
+         throw new IllegalStateException("Not Connected to Database");
+      
+      hq.updateAmenityDescription(aID, desc);
+            
+      // notify JTable that model has changed
+      fireTableStructureChanged();
+   }
+   
+   /*
+    * Calls the updateAmmenityPrice query method
+    * and updates the model
+    */
+   public void setQueryUpdateAmenityPrice(String aID, String price)
+      throws SQLException, IllegalStateException 
+   {
+      // ensure database connection is available
+      if (!connectedToDatabase) 
+         throw new IllegalStateException("Not Connected to Database");
+      
+      //update price
+      hq.updateAmenityPrice(aID, price);
+      
+      // notify JTable that model has changed
+      fireTableStructureChanged();
+   }
+   
+   /*
+    * Calls the updateAmenity query method
+    * and updates the model
+    */
+   public void setQueryUpdateAmenityDescriptionPrice(String aID, String desc, String price)
+      throws SQLException, IllegalStateException 
+   {
+      // ensure database connection is available
+      if (!connectedToDatabase) 
+         throw new IllegalStateException("Not Connected to Database");
+      
+      hq.updateAmenityDescriptionPrice(aID, desc, price);
+            
+      // notify JTable that model has changed
+      fireTableStructureChanged();
+   }
+   
+   /*
     * Calls the deleteCustomerUsingID query method
     * and updates the model
     */

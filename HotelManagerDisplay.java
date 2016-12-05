@@ -1051,9 +1051,79 @@ public class HotelManagerDisplay extends JFrame {
         updateAmenityButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //TODO
-            }
-        });
+                String id = editAmenityItemTextField.getText();
+                String name = addItemAmenityTextField.getText();
+                String price = addPriceAmenityTextField.getText();
+                
+                //check that an Id has been input into field
+                if(id.isEmpty()){
+                	//notify user of invalid parameter
+                	return;
+                }
+                
+                	//convert id string to int
+                	int aID = Integer.parseInt(id);
+                		
+                	//Check if name and price both not empty
+                	if(!name.isEmpty() && !price.isEmpty())
+                    	{
+                        	try {
+                        		ammenityTableModel.setQueryUpdateAmenityDescriptionPrice(id, name, price);
+
+            				} catch (IllegalStateException e1) {
+            					e1.printStackTrace();
+            				} catch (SQLException e1) {
+            					e1.printStackTrace();
+            				}
+                    	}
+                	//only name being updated
+                	else if(!name.isEmpty())
+                    	{
+                        	try {
+                        		ammenityTableModel.setQueryUpdateAmenityDescription(id, name);
+
+            				} catch (IllegalStateException e1) {
+            					e1.printStackTrace();
+            				} catch (SQLException e1) {
+            					e1.printStackTrace();
+            				}
+                    	}
+                	//only price is being updated
+                	else if(!price.isEmpty())
+                    	{
+                        	try {
+                        		ammenityTableModel.setQueryUpdateAmenityPrice(id, price);
+            				} catch (IllegalStateException e1) {
+            					e1.printStackTrace();
+            				} catch (SQLException e1) {
+            					e1.printStackTrace();
+            				}
+                    	}
+                    	
+                    	/*
+                    	 * Update the room/customer table in the GUI to
+                    	 * reflect the model update
+                    	 */
+                    	
+                    	try {
+                    		ammenityTableModel.setQueryGetAllAmenities();
+        				} catch (IllegalStateException e1) {
+        					e1.printStackTrace();
+        				} catch (SQLException e1) {
+        					e1.printStackTrace();
+        				}
+                    	
+                    	
+                    	// Update the user message
+                    	customerMessageLabel.setText("UPDATE SUCCESSFUL");
+                    	
+                    	// Clear text fields on form
+                    	editAmenityItemTextField.setText("");
+                    	addItemAmenityTextField.setText("");
+                    	addPriceAmenityTextField.setText("");
+                    }
+                
+            });
 
         //Delete Button
         deleteAmenityButton = new JButton("Delete");

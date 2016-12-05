@@ -47,6 +47,9 @@ public class HotelQueries {
 	private PreparedStatement orderAmenity;
 	private PreparedStatement addAmenity;
 	private PreparedStatement deleteAmenity;
+	private PreparedStatement updateAmenityDescription;
+	private PreparedStatement updateAmenityPrice;
+	private PreparedStatement updateAmenityDescriptionPrice;
 
 	// constructor
 	public HotelQueries()
@@ -131,6 +134,22 @@ public class HotelQueries {
 	         
 	         // Add amenity
 	         addAmenity = connection.prepareStatement("INSERT INTO ammenities(description, price) VALUES(?,?)");
+	         
+	         // Update Amenity name
+	         updateAmenityDescriptionPrice = 
+	        		 connection.prepareStatement("Update ammenities SET description = ?, " 
+	        				+ "price = ? "
+	        		 		+ "WHERE aID = ?");
+	         
+	         // Update Amenity name
+	         updateAmenityDescription = 
+	        		 connection.prepareStatement("Update ammenities SET description = ? "
+	        		 		+ "WHERE aID = ?");
+	         
+	         // Update Amenity name
+	         updateAmenityPrice = 
+	        		 connection.prepareStatement("Update ammenities SET price = ? "
+	        		 		+ "WHERE aID = ?");
 	         
 	         // Delete amenity
 	         deleteAmenity = connection.prepareStatement("DELETE FROM ammenities WHERE aID = ?)");
@@ -626,6 +645,74 @@ public class HotelQueries {
 		return result;
 	}
 
+	/*
+	  * Update amenity price and description
+	  */
+	public void updateAmenityDescriptionPrice(String aID, String desc, String price)
+	{
+		      
+		   try 
+		   {	   
+			   //set parameters
+			   updateAmenityDescription.setString(1, desc);
+			   updateAmenityDescription.setString(2, price);
+			   updateAmenityDescription.setString(3, aID);
+		    	  
+		       // executeQuery
+			   updateAmenityDescriptionPrice.executeUpdate(); 
+		         
+		    } 
+		    catch (SQLException sqlException)
+		    {
+		         sqlException.printStackTrace();         
+		    } 
+	}
+	
+	/*
+	  * Update a customer's name
+	  */
+	public void updateAmenityDescription(String aID, String desc)
+	{
+		      
+		   try 
+		   {	   
+			   //set parameters
+			   updateAmenityDescription.setString(1, desc);
+			   updateAmenityDescription.setString(2, aID);
+		    	  
+		       // executeQuery
+			   updateAmenityDescription.executeUpdate(); 
+		         
+		    } 
+		    catch (SQLException sqlException)
+		    {
+		         sqlException.printStackTrace();         
+		    } 
+	}
+	
+	/*
+	  * Update a customer's name
+	  */
+	public void updateAmenityPrice(String aID, String price)
+	{
+		      
+		   try 
+		   {	   
+			   //set parameters
+			   updateAmenityPrice.setString(1, price);
+			   updateAmenityPrice.setString(2, aID);
+		    	  
+		       // executeQuery
+			   updateAmenityPrice.executeUpdate(); 
+		         
+		    } 
+		    catch (SQLException sqlException)
+		    {
+		         sqlException.printStackTrace();         
+		    } 
+	}
+
+	
 	/*
 	 * Delete amenity with given id
 	 */
