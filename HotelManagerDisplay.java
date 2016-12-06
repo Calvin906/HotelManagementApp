@@ -261,6 +261,9 @@ public class HotelManagerDisplay extends JFrame {
         viewArchiveButton = new JButton("Archive");
         viewArchiveButton.addActionListener(new ActionListener(){
         	public void actionPerformed(ActionEvent e){
+        		
+        		//Clear any user messages
+        		customerMessageLabel.setText("");
         		// Call the select everything from archive query
             	try {
             		tableModel.setQuerySelectAllArchive();
