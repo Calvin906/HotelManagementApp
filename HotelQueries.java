@@ -174,7 +174,7 @@ public class HotelQueries {
 //
 //	         // Gets the most recently added customer cID from customer table
 //	         // Uses the SQL max aggregation function
-//	         getNewestCid = connection.prepareStatement("select max(cID) from customer");
+	         //getNewestCid = connection.prepareStatement("select max(cID) from customer");
 
 
 	         getAllOccupiedRooms = connection.prepareStatement("select cName, rID, cID, occupiedDate from customer natural join occupied");
