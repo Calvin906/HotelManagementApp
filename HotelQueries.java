@@ -4,8 +4,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.ArrayList;
+import java.util.Date;
 /**
  *
  * CS157A Project
@@ -16,23 +19,23 @@ public class HotelQueries {
 
 	private static final String URL = "jdbc:mysql://localhost/Hotel?useSSL=false";
 	private static final String USERNAME = "root";
-	private static final String PASSWORD = "Frank$101";
+	private static final String PASSWORD = "";
 
 	private Connection connection; // manages connection
 
 	/**
 	 * Below are all the queries our program will use.
 	 */
-	private PreparedStatement selectAllCustomers;
+	private PreparedStatement selectAllCustomers; 
 	private PreparedStatement selectAllAmenities;
-	private PreparedStatement selectCustomerByName;
-	private PreparedStatement insertNewCustomer;
+	private PreparedStatement selectCustomerByName; 
+	private PreparedStatement insertNewCustomer; 
 	private PreparedStatement deleteCustomer;
-	private PreparedStatement updateNameEmailPhone;
+	private PreparedStatement updateNameEmailPhone; 
 	private PreparedStatement updateNameEmail;
 	private PreparedStatement updateNamePhone;
 	private PreparedStatement updateEmailPhone;
-	private PreparedStatement updateCustomerName;
+	private PreparedStatement updateCustomerName; 
 	private PreparedStatement updateEmail;
 	private PreparedStatement updatePhone;
 	private PreparedStatement selectAllRooms;
@@ -40,7 +43,15 @@ public class HotelQueries {
 	private PreparedStatement getRoomOccupiedInfo;
 	private PreparedStatement getAllOccupiedRooms;
 	private PreparedStatement bookRoom;
-	//< TO DO > add more queries
+	private PreparedStatement createInvoice;
+	private PreparedStatement orderAmenity;
+	private PreparedStatement addAmenity;
+	private PreparedStatement selectAmenityById;
+	private PreparedStatement selectAmenityByName;
+	private PreparedStatement deleteAmenity;
+	private PreparedStatement updateAmenityDescription;
+	private PreparedStatement updateAmenityPrice;
+	private PreparedStatement updateAmenityDescriptionPrice;
 
 	// constructor
 	public HotelQueries()
@@ -122,6 +133,43 @@ public class HotelQueries {
 	         
 	         // Get all occupied rooms
 	         getAllOccupiedRooms = connection.prepareStatement("select cName, rID, cID, occupiedDate from customer natural join occupied");
+	         
+	         // Add amenity
+	         addAmenity = connection.prepareStatement("INSERT INTO ammenities(description, price) VALUES(?,?)");
+	         
+	         //select amenity by id
+	         selectAmenityById = connection.prepareStatement("SELECT * FROM ammenities WHERE aID = ?");
+	         
+	         //selectt amenity by name
+	         selectAmenityByName = connection.prepareStatement("SELECT * FROM ammenities WHERE description = ?");
+	         
+	         // Update Amenity name
+	         updateAmenityDescriptionPrice = 
+	        		 connection.prepareStatement("Update ammenities SET description = ?, " 
+	        				+ "price = ? "
+	        		 		+ "WHERE aID = ?");
+	         
+	         // Update Amenity name
+	         updateAmenityDescription = 
+	        		 connection.prepareStatement("Update ammenities SET description = ? "
+	        		 		+ "WHERE aID = ?");
+	         
+	         // Update Amenity name
+	         updateAmenityPrice = 
+	        		 connection.prepareStatement("Update ammenities SET price = ? "
+	        		 		+ "WHERE aID = ?");
+	         
+	         // Delete amenity
+	         deleteAmenity = connection.prepareStatement("DELETE FROM ammenities WHERE aID = ?)");
+	         
+	         // Order amenity
+	         orderAmenity = connection.prepareStatement("INSERT INTO ammenity_orders(aID, cID, amount) VALUES(?,?,?)");
+	         
+	         // Create Invoice
+	         createInvoice = connection.prepareStatement("SELECT * FROM (SELECT SUM(price * amount) AS amenityTotal " + 
+	         "FROM ammenities NATURAL JOIN ammenity_orders WHERE cID = ?) a1 " +
+	        	 "join (SELECT occupiedDate, price FROM occupied NATURAL JOIN room where cID = ?) a2");
+	         
 		}
 		catch (SQLException sqlException)
 		{
@@ -578,7 +626,257 @@ public class HotelQueries {
 		         sqlException.printStackTrace();         
 		    }
 	}
+	
+	/*
+	 * Add amenity to database
+	 */
+	public int addAmenity(String desc, double price){
+		int result = 0;
+		try{
+			//set parameters, then execute query
+			addAmenity.setString(1, desc);
+			addAmenity.setDouble(2, price);
+			
+			//execute query
+			addAmenity.executeUpdate();
+			
+			//pull new amenity Id to
+			ResultSet rs = addAmenity.getGeneratedKeys();
+			if(rs.next())
+			{
+				result = rs.getInt(1);
+			}
+		}
+		catch(SQLException sqlException){
+			sqlException.printStackTrace();
+		}
+		return result;
+	}
 
+	/*
+	  * Selects amenity by id number
+	  * aID the amenity ID
+	  * returns ResultSet
+	  */
+	public ResultSet selectAmenityById(int aID)
+	{
+		   ResultSet resultSet = null;
+		      
+		   try 
+		   {
+			   //set parameters
+			   selectAmenityById.setInt(1, aID);
+			  		    	  
+		       // executeQuery
+			   resultSet = selectAmenityById.executeQuery(); 
+		         
+		    } 
+		    catch (SQLException sqlException)
+		    {
+		         sqlException.printStackTrace();         
+		    }
+		   
+		   return resultSet;
+	}
+	
+	/*
+	  * Selects amenity by id number
+	  * aID the amenity ID
+	  * returns ResultSet
+	  */
+	public ResultSet selectAmenityByName(String name)
+	{
+		   ResultSet resultSet = null;
+		      
+		   try 
+		   {
+			   //set parameters
+			   selectAmenityById.setString(1, name);
+			  		    	  
+		       // executeQuery
+			   resultSet = selectAmenityByName.executeQuery(); 
+		         
+		    } 
+		    catch (SQLException sqlException)
+		    {
+		         sqlException.printStackTrace();         
+		    }
+		   
+		   return resultSet;
+	}
+	
+	/*
+	  * Update amenity price and description
+	  */
+	public void updateAmenityDescriptionPrice(int aID, String desc, String price)
+	{
+		      
+		   try 
+		   {	   
+			   //set parameters
+			   updateAmenityDescription.setString(1, desc);
+			   updateAmenityDescription.setString(2, price);
+			   updateAmenityDescription.setInt(3, aID);
+		    	  
+		       // executeQuery
+			   updateAmenityDescriptionPrice.executeUpdate(); 
+		         
+		    } 
+		    catch (SQLException sqlException)
+		    {
+		         sqlException.printStackTrace();         
+		    } 
+	}
+	
+	/*
+	  * Update a customer's name
+	  */
+	public void updateAmenityDescription(int aID, String desc)
+	{
+		      
+		   try 
+		   {	   
+			   //set parameters
+			   updateAmenityDescription.setString(1, desc);
+			   updateAmenityDescription.setInt(2, aID);
+		    	  
+		       // executeQuery
+			   updateAmenityDescription.executeUpdate(); 
+		         
+		    } 
+		    catch (SQLException sqlException)
+		    {
+		         sqlException.printStackTrace();         
+		    } 
+	}
+	
+	/*
+	  * Update a customer's name
+	  */
+	public void updateAmenityPrice(int aID, String price)
+	{
+		      
+		   try 
+		   {	   
+			   //set parameters
+			   updateAmenityPrice.setString(1, price);
+			   updateAmenityPrice.setInt(2, aID);
+		    	  
+		       // executeQuery
+			   updateAmenityPrice.executeUpdate(); 
+		         
+		    } 
+		    catch (SQLException sqlException)
+		    {
+		         sqlException.printStackTrace();         
+		    } 
+	}
+
+	
+	/*
+	 * Delete amenity with given id
+	 */
+	public void deleteAmenity(int id){
+		try {
+			//set parameter to identify amenity to delete
+			deleteAmenity.setInt(1, id);
+			
+			//execute delete
+			deleteAmenity.executeUpdate();
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/*
+	 * Order amenity
+	 */
+	public void orderAmenity(int aID, int cID, int amount){
+		try {
+			//set parameters to charge amenity to given customer
+			orderAmenity.setInt(1, aID);
+			orderAmenity.setInt(2, cID);
+			orderAmenity.setInt(3, amount);
+			
+			//execute order
+			orderAmenity.executeUpdate();
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	/*
+	 * Create invoice for customer. Returns array list with 2 doubles (amenityTotal, roomTotal, grandTotal)
+	 */
+	public List<Double> createInvoice(int cID){
+		List<Double> results = new ArrayList<Double>();
+		ResultSet resultSet = null;
+		double amenityTotal = 0;
+		double roomTotal = 0.0;
+		double grandTotal = 0.0;
+		int daysInRoom = 0;
+		double roomPrice = 0.0;
+		Timestamp stamp;
+		Date currentDate = new Date();
+		Date checkInDate;
+		
+		try {
+			//set customer ID as parameter 1 and 2
+			createInvoice.setInt(1, cID);
+			createInvoice.setInt(2, cID);
+			
+			//execute update
+			resultSet = createInvoice.executeQuery();
+			
+			//calculate totals
+			while (resultSet.next())
+			{
+				//pull amenity from column 1. If null, will equal 0
+				amenityTotal = resultSet.getInt("amenityTotal");
+				//pull room price
+				roomPrice = resultSet.getDouble("price");
+				
+				//pull timestamp, convert to Date
+				stamp = resultSet.getTimestamp("occupiedDate");
+				checkInDate = new Date(stamp.getTime());
+				
+				//call getDateDiff to calculate number of days stayed in room
+				daysInRoom = (int) getDateDiff(checkInDate, currentDate, TimeUnit.DAYS);
+				
+				//update room total using room price and days stayed
+				roomTotal += (double) (daysInRoom * roomPrice);
+			}
+			
+			results.set(0, amenityTotal);
+			results.set(1, roomTotal);
+			results.set(2, amenityTotal + roomTotal);
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return results;
+	}
+	
+	/*
+	 * Helper method to calculate days between
+	 */
+	
+	/*
+	 * Get a diff between two dates
+	 * @param date1 the oldest date
+	 * @param date2 the newest date
+	 * @param timeUnit the unit in which you want the diff
+	 * @return the diff value, in the provided unit
+	 */
+	public static long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
+	    long diffInMillies = date2.getTime() - date1.getTime();
+	    return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
+	}
+	
 	// close the database connection
 	public void close()
 	{
