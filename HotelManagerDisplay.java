@@ -6,7 +6,15 @@ import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * CS157A Group Project Fall 2016
@@ -65,6 +73,9 @@ public class HotelManagerDisplay extends JFrame {
     private JLabel emailCustomerLabel;
     private JLabel checkoutLabel;
     private JLabel itemLabel;
+    private JLabel havingGreaterThanLabel;
+    private JButton viewArchiveButton;
+    private JButton archiveButton;
     private JLabel editAmenityItemLabel;
     private JButton roomsBookButton;
     private JButton searchRoomButton;
@@ -98,6 +109,7 @@ public class HotelManagerDisplay extends JFrame {
     private JTextField amountAmenityTextField;
     private JTextField addPriceAmenityTextField;
     private JTextField addItemAmenityTextField;
+    private JTextField havingGreaterThanTextField;
     private JCheckBox vipCustomerCheckbox;
     private JCheckBox suiteBookCheckbox;
     private JCheckBox basicBookCheckbox;
@@ -173,6 +185,13 @@ public class HotelManagerDisplay extends JFrame {
         //Rooms TextField
         roomNumBookTextField = new JTextField();
         roomNumBookTextField.setMaximumSize(new Dimension(55, 20));
+        
+        //Having > ___ rooms
+        havingGreaterThanLabel = new JLabel("Having > ");
+
+        //Having > TextField
+        havingGreaterThanTextField = new JTextField();
+        havingGreaterThanTextField.setMaximumSize(new Dimension(55, 20));
 
         //Panel for the Button and textField and Label
         JPanel roomBookPanel = new JPanel();
@@ -185,6 +204,8 @@ public class HotelManagerDisplay extends JFrame {
         roomBookPanel.add(basicBookCheckbox);
         roomBookPanel.add(roomsBookLabel);
         roomBookPanel.add(roomNumBookTextField);
+        roomBookPanel.add(havingGreaterThanLabel);
+        roomBookPanel.add(havingGreaterThanTextField);
         roomBookPanel.add(Box.createRigidArea(new Dimension(5, 0)));
 
 
@@ -229,7 +250,34 @@ public class HotelManagerDisplay extends JFrame {
         customerBookPanel.add(emailBookTextField);
         
         customerBookPanel.add(Box.createRigidArea(new Dimension(5, 0)));
-
+        
+        // Last inserted customer ID
+        JLabel lastInsertedCID = new JLabel("Get Newest CID");
+        JCheckBox lastInsertedCidCheckbox = new JCheckBox();
+        JPanel lastInsertedCidPanel = new JPanel();
+        lastInsertedCidPanel.setLayout(new BoxLayout(lastInsertedCidPanel, BoxLayout.LINE_AXIS));
+        lastInsertedCidPanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
+        lastInsertedCidPanel.add(lastInsertedCID);
+        lastInsertedCidPanel.add(lastInsertedCidCheckbox);
+        
+/********************* Archive Button Event Handler **************************/
+        viewArchiveButton = new JButton("Archive");
+        viewArchiveButton.addActionListener(new ActionListener(){
+        	public void actionPerformed(ActionEvent e){
+        		// Call the select everything from archive query
+            	try {
+            		tableModel.setQuerySelectAllArchive();
+				} catch (IllegalStateException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+        	}
+        });
+        
+/********************* Book Button Event Handler ******************************/
         //Rooms Book Button
         roomsBookButton = new JButton("Book");
         roomsBookButton.addActionListener(new ActionListener() {
@@ -239,6 +287,8 @@ public class HotelManagerDisplay extends JFrame {
             	// Check that a room# and customer# were entered
             	String roomNum = roomNumBookTextField.getText();
             	String custNum = cIDNameBookTextField.getText();
+            	String result = "";
+            	int code = 0;
             	
             	// If user entered room# and cust#
             	if(!roomNum.isEmpty() && !custNum.isEmpty())
@@ -250,7 +300,20 @@ public class HotelManagerDisplay extends JFrame {
             			Integer.parseInt(custNum);
             			
             			// Call method to execute the query
-            			tableModel.setQueryBookRoom(custNum, roomNum);
+            			result = tableModel.setQueryBookRoom(custNum, roomNum);
+            			code = Integer.parseInt(result);
+            			if(code == 1452)
+            			{
+            				result = "Invalid cID caused Error 1452: FK Violation.";
+                			customerMessageLabel.setForeground(Color.RED);
+                			customerMessageLabel.setText(result);
+            			}
+            			else
+            			{
+            				result = "Booked customer " + custNum + " to room " + roomNum;
+            				customerMessageLabel.setForeground(Color.BLUE);
+            				customerMessageLabel.setText(result);
+            			}
             			
                     	/*
                     	 * Update the room/customer table in the GUI to
@@ -262,6 +325,9 @@ public class HotelManagerDisplay extends JFrame {
         				} catch (IllegalStateException e1) {
         					e1.printStackTrace();
         				} catch (SQLException e1) {
+        					//Display SQL error
+        					System.err.println("An SQL error occurred:" + e1.getErrorCode());
+        					customerMessageLabel.setText(""+ e1.getErrorCode());
         					e1.printStackTrace();
         				}
             		}
@@ -283,9 +349,21 @@ public class HotelManagerDisplay extends JFrame {
         			customerMessageLabel.setText("ROOM# OR cID CAN NOT BE BLANK");
         			customerMessageLabel.setForeground(Color.RED);
             	}
+            	
+            	// If no FK violation, clear textfields
+            	if(code != 1452)
+            	{
+            		// clear textFields
+            		roomNumBookTextField.setText("");
+            		cIDNameBookTextField.setText("");
+            	}
             }
+            
         });
-
+/************************** END Book Button Event Handler **************************/
+        
+        
+/************************** Room Button Event Handler  *****************************/
         //Search for Room Button
         searchRoomButton = new JButton("Room");
         searchRoomButton.addActionListener(new ActionListener() {
@@ -293,8 +371,10 @@ public class HotelManagerDisplay extends JFrame {
             public void actionPerformed(ActionEvent e) {
             	
             	String roomNum = roomNumBookTextField.getText();
+            	boolean selected = suiteBookCheckbox.isSelected();
+            	System.out.println("Suite checkbox selected: " + selected);
             	
-            	if(roomNum.isEmpty())
+            	if(roomNum.isEmpty() && !selected)
             	{
             		// Clear user message label
             		customerMessageLabel.setText("          ");
@@ -304,6 +384,20 @@ public class HotelManagerDisplay extends JFrame {
 					} catch (IllegalStateException e1) {
 						e1.printStackTrace();
 					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
+            	}else if(roomNum.isEmpty() && selected)
+            	{
+            		// Clear user message label
+            		customerMessageLabel.setText("          ");
+            	
+	            	try {
+	            		tableModel.setQueryGetAllSuiteRooms();
+					} catch (IllegalStateException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
             	}
@@ -333,15 +427,18 @@ public class HotelManagerDisplay extends JFrame {
             	}
             }
         });
+/**************************End Room Button Event Handler *********************/
         
+/**************************Occupied Button Event Handler *********************/
         occupiedButton = new JButton("Occupied");
         occupiedButton.addActionListener(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
             	String roomNum = roomNumBookTextField.getText();
+            	String havingGreaterThan = havingGreaterThanTextField.getText();
             	
-            	if(roomNum.isEmpty())
+            	if(roomNum.isEmpty() && havingGreaterThan.isEmpty())
             	{
             		// Clear user message label
             		customerMessageLabel.setText("          ");
@@ -355,8 +452,8 @@ public class HotelManagerDisplay extends JFrame {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
-            	}
-            	else
+            	}// Select customer occupying a particular room #
+            	else if(!roomNum.isEmpty() && havingGreaterThan.isEmpty())
             	{
             		try
             		{
@@ -379,28 +476,73 @@ public class HotelManagerDisplay extends JFrame {
             			customerMessageLabel.setForeground(Color.RED);
 						e1.printStackTrace();
 					}
+            	 // Select customers having > than x rooms
+            	}else if(roomNum.isEmpty() && !havingGreaterThan.isEmpty())
+            	{
+            		try
+            		{
+            			// Check that user entered a number
+            			Integer.parseInt(havingGreaterThan);
+            			
+            			// Call method that will execute query
+            			tableModel.setQuerySelectOccupiedHavingGreaterThan(havingGreaterThan);
+            		}
+            		catch(NumberFormatException e1){
+            			customerMessageLabel.setText("HAVING > MUST BE INTEGER");
+            			customerMessageLabel.setForeground(Color.RED);
+            			
+            		} catch (IllegalStateException e1) {
+            			customerMessageLabel.setText("Database Error");
+            			customerMessageLabel.setForeground(Color.RED);
+						e1.printStackTrace();
+					} catch (SQLException e1) {
+            			customerMessageLabel.setText("Database Error");
+            			customerMessageLabel.setForeground(Color.RED);
+						e1.printStackTrace();
+					}
             	}
 				
 			}});
-
+/***************************End Occupied Button Event Handler ********************/
         
-        
+/***************************Customer Button Event Handler *************************/
+         
         //Search for Customer Button
         searchCustomerButton = new JButton("Customer");
         searchCustomerButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            	try {
-            		tableModel.setQueryGetAllCustomers();
-				} catch (IllegalStateException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				} catch (SQLException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+            	
+            	boolean getCid = lastInsertedCidCheckbox.isSelected();
+            	
+            	// get cID checkbox not selected get all customers
+            	if(!getCid)
+            	{
+	            	try {
+	            		tableModel.setQueryGetAllCustomers();
+					} catch (IllegalStateException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+            	}
+            	else // get cID checkbox is selected get newest cID
+            	{
+	            	try {
+	            		tableModel.setQueryGetNewestCid();
+					} catch (IllegalStateException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+            	}
             }
         });
+/**************************End Customer Button Event Handler **********************/
 
         JPanel buttonBookPanel = new JPanel();
         buttonBookPanel.setLayout(new BoxLayout(buttonBookPanel, BoxLayout.LINE_AXIS));
@@ -411,11 +553,16 @@ public class HotelManagerDisplay extends JFrame {
         buttonBookPanel.add(occupiedButton);
         buttonBookPanel.add(new JLabel("   ")); //spacer label
         buttonBookPanel.add(searchCustomerButton);
+        buttonBookPanel.add(new JLabel("   ")); //spacer label
+        buttonBookPanel.add(viewArchiveButton);
 
-        roomPanel.add(new JLabel("   ")); //Spacer - spaces panels away from JTable
+        roomPanel.add(new JLabel("      ")); //Spacer - spaces panels away from JTable
         roomPanel.add(roomBookPanel);
         roomPanel.add(customerBookPanel);
+        roomPanel.add(lastInsertedCidPanel);
         roomPanel.add(buttonBookPanel);
+        roomPanel.add(new JLabel("     ")); //spacer
+        roomPanel.add(new JLabel("     ")); //spacer
         add(roomPanel);
 
         //ROOM PANEL END
@@ -520,6 +667,27 @@ public class HotelManagerDisplay extends JFrame {
         vipPanel.add(vipCustomerCheckbox);
         customerPanel.add(vipPanel);
         
+        /*********Archive label, textfield *******/
+        //Name Label
+        JLabel archiveLabel = new JLabel("Archive: ");
+        JLabel dateLabel = new JLabel("    YYYY-MM-DD");
+
+        //Name TextField
+        JTextField archiveTextField = new JTextField();
+        archiveTextField.setMaximumSize(new Dimension(100,20));
+        
+
+        //Panel for Name and Name TextField
+        JPanel archivePanel = new JPanel();
+        archivePanel.setLayout(new BoxLayout(archivePanel, BoxLayout.LINE_AXIS));
+        archivePanel.setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
+        archivePanel.add(archiveLabel);
+        archivePanel.add(Box.createRigidArea(new Dimension(5, 0)));
+        archivePanel.add(archiveTextField);
+        archivePanel.add(dateLabel);
+        customerPanel.add(archivePanel);
+        /***********End Archive label, textfield *******/
+        
         
 
         //Panel for the Button to offset Centering issue
@@ -542,9 +710,10 @@ public class HotelManagerDisplay extends JFrame {
             	// Add customer to DB
             	Integer id = hotelQueries.addCustomer(name, email, phone);
             	
+            	// Show message to user
             	cIDNameBookTextField.setText(id.toString());
-            	
-            	customerMessageLabel.setText("SUCCESS. cID# " + id.toString());
+            	customerMessageLabel.setForeground(Color.BLUE);
+            	customerMessageLabel.setText("CUSTOMER ADDED. cID# " + id.toString());
             	
             	// Clear text fields on form
             	nameCustomerTextField.setText("");
@@ -761,8 +930,70 @@ public class HotelManagerDisplay extends JFrame {
             }
         });
         
+/****************** Archive Button Event Handler*******************/
+       archiveButton = new JButton("Archive");
+       customerButtonPanel.add(new JLabel("   "));//spacer
+       customerButtonPanel.add(archiveButton);
+       archiveButton.addActionListener(new ActionListener() {
+           @Override
+           public void actionPerformed(ActionEvent e) {
+        	   String aDate = archiveTextField.getText();
+        	   
+        	   // if user entered something
+        	   // check it is a date
+        	   if(!aDate.isEmpty())
+        	   {
+        		   //Specify a date formatter to use for parsing date string
+        		   DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        		   
+					try
+					{
+						customerMessageLabel.setText("");
+						//Check that the user entered an actual date
+						Date date = format.parse(aDate);
+						System.out.println("You entered date: " + date);
+		            	try {
+		            		tableModel.setQueryArchiveCustomers(aDate);
+		            		tableModel.setQueryDeleteVIPBeforeDate(aDate);
+		            		tableModel.setQueryDeleteCustomerBeforeDate(aDate);
+						} catch (IllegalStateException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						} catch (SQLException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+						
+					}
+					catch (ParseException e1) {
+						// string did not parse to a date
+		        		customerMessageLabel.setForeground(Color.RED);
+		        		customerMessageLabel.setText("ERROR WITH DATE ENTERED");
+						e1.printStackTrace();
+					}
+        	   }
+        	   else
+        	   {
+        		   customerMessageLabel.setForeground(Color.RED);
+        		   customerMessageLabel.setText("PLEASE ENTER A DATE YYYY-MM-DD");
+        	   }
+        	
+        	// Refresh JTable to show Archived table
+           	try {
+           		tableModel.setQuerySelectAllArchive();
+				} catch (IllegalStateException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+           }
+       });
+/****************** End Archive Button Event Handler *************/
+       
         customerMessageLabel = new JLabel("GUEST MANAGEMENT SYSTEM");
-        customerMessageLabel.setFont(new Font("Serif", Font.BOLD, 12));
+        customerMessageLabel.setFont(new Font("Serif", Font.BOLD, 14));
         JLabel spacer = new JLabel("    ");
         customerPanel.add(spacer);
         customerPanel.add(customerMessageLabel);
@@ -1223,7 +1454,7 @@ public class HotelManagerDisplay extends JFrame {
         addButtonsAmenityPanel.add(createAmenityButton);
         addButtonsAmenityPanel.add(updateAmenityButton);
         addButtonsAmenityPanel.add(deleteAmenityButton);
-        amenitiesPanel.add(new JLabel(""));
+        
         amenitiesPanel.add(addButtonsAmenityPanel);
 
         add(amenitiesPanel);

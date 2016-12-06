@@ -67,6 +67,18 @@ CREATE TABLE Ammenity_orders
  ON UPDATE CASCADE
 );
 
+DROP TABLE IF EXISTS Archive;
+CREATE TABLE Archive
+(archiveID INT PRIMARY KEY AUTO_INCREMENT,
+ cID INT,
+ cNAME VARCHAR(40),
+ email VARCHAR(50),
+ phone VARCHAR(14),
+ num_rooms INT DEFAULT 0,
+ updatedOn TIMESTAMP NOT NULL,
+ has_spent double DEFAULT 0.00 NOT NULL
+);
+
 ############### TRIGGERS ############################################
 
 DROP TRIGGER IF EXISTS deleteCascadeTrigger;
