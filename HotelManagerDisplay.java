@@ -949,10 +949,16 @@ public class HotelManagerDisplay extends JFrame {
                 	int convertedAmenityId = Integer.parseInt(amenity);
                 	int convertedCustomerId = Integer.parseInt(custId);
                 	int convertedAmount = Integer.parseInt(amount);
-                	
+                	try{
                 	hotelQueries.orderAmenity(convertedAmenityId, convertedCustomerId, convertedAmount);
                 	customerMessageLabel.setText("Order placed successfully");
         			customerMessageLabel.setForeground(Color.RED);
+                }		
+             	 catch (IllegalStateException e1) {
+             			customerMessageLabel.setText("Database Error");
+             			customerMessageLabel.setForeground(Color.RED);
+     					e1.printStackTrace();
+     				}
                 }
             }
         });
@@ -1017,8 +1023,10 @@ public class HotelManagerDisplay extends JFrame {
         addItemsPanel.setLayout(new BoxLayout(addItemsPanel, BoxLayout.LINE_AXIS));
         addItemsPanel.add(editAmenityItemLabel);
         addItemsPanel.add(editAmenityItemTextField);
+        amenitiesPanel.add(new JLabel(""));
         addItemsPanel.add(itemNameAmenityLabel);
         addItemsPanel.add(addItemAmenityTextField);
+        amenitiesPanel.add(new JLabel(""));
         addItemsPanel.add(itemPriceAmenityLabel);
         addItemsPanel.add(addPriceAmenityTextField);
 
@@ -1046,7 +1054,7 @@ public class HotelManagerDisplay extends JFrame {
 	            		int aID = Integer.parseInt(amenityId);
 	            		ammenityTableModel.setQuerySelectAmenityById(aID);
 					} catch(NumberFormatException e1){
-	        			customerMessageLabel.setText("Item # MUST BE AN INTEGER");
+	        			customerMessageLabel.setText("ITEM # MUST BE AN INTEGER");
 	        			customerMessageLabel.setForeground(Color.RED);
 	        			} catch (IllegalStateException e1) {
 						e1.printStackTrace();
@@ -1114,12 +1122,8 @@ public class HotelManagerDisplay extends JFrame {
              convertedPrice = Double.parseDouble(price);
              
             	// Add amenity to DB
-            	Integer id = hotelQueries.addAmenity(name, convertedPrice);
-            	
-            	editAmenityItemTextField.setText(id.toString());
-            	
-            	customerMessageLabel.setText("SUCCESS. aID# " + id.toString());
-            	
+            	hotelQueries.addAmenity(name, convertedPrice);            	
+            	customerMessageLabel.setText("SUCCESS");
             	
             	/*
             	 * Update the amenity table in the GUI to reflect model change

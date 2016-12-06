@@ -142,7 +142,7 @@ public class HotelQueries {
 	         selectAmenityById = connection.prepareStatement("SELECT * FROM ammenities WHERE aID = ?");
 	         
 	         //selectt amenity by name
-	         selectAmenityByName = connection.prepareStatement("SELECT * FROM ammenities WHERE description = ?");
+	         selectAmenityByName = connection.prepareStatement("SELECT * FROM ammenities WHERE description like ?");
 	         
 	         // Update Amenity name
 	         updateAmenityDescriptionPrice = 
@@ -631,7 +631,7 @@ public class HotelQueries {
 	/*
 	 * Add amenity to database
 	 */
-	public int addAmenity(String desc, double price){
+	public void addAmenity(String desc, double price){
 		int result = 0;
 		try{
 			//set parameters, then execute query
@@ -641,17 +641,10 @@ public class HotelQueries {
 			//execute query
 			addAmenity.executeUpdate();
 			
-			//pull new amenity Id to
-			ResultSet rs = addAmenity.getGeneratedKeys();
-			if(rs.next())
-			{
-				result = rs.getInt(1);
-			}
 		}
 		catch(SQLException sqlException){
 			sqlException.printStackTrace();
 		}
-		return result;
 	}
 
 	/*
@@ -692,7 +685,7 @@ public class HotelQueries {
 		   try 
 		   {
 			   //set parameters
-			   selectAmenityById.setString(1, name);
+			   selectAmenityByName.setString(1, "%" + name + "%");
 			  		    	  
 		       // executeQuery
 			   resultSet = selectAmenityByName.executeQuery(); 
