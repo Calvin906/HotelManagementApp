@@ -161,7 +161,7 @@ public class HotelQueries {
 	        		 		+ "WHERE aID = ?");
 	         
 	         // Delete amenity
-	         deleteAmenity = connection.prepareStatement("DELETE FROM ammenities WHERE aID = ?)");
+	         deleteAmenity = connection.prepareStatement("DELETE FROM ammenities WHERE aID = ?");
 	         
 	         // Order amenity
 	         orderAmenity = connection.prepareStatement("INSERT INTO ammenity_orders(aID, cID, amount) VALUES(?,?,?)");

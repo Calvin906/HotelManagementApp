@@ -1266,6 +1266,21 @@ public class HotelManagerDisplay extends JFrame {
         			customerMessageLabel.setForeground(Color.RED);
 					e1.printStackTrace();
             	}
+            	
+            	
+            	/*
+            	 * Update ammenity table in the GUI to
+            	 * reflect the model update
+            	 */
+            	
+            	try {
+            		ammenityTableModel.setQueryGetAllAmenities();
+				} catch (IllegalStateException e1) {
+					e1.printStackTrace();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+            	
             }            
         });
 
