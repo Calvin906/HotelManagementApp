@@ -805,8 +805,8 @@ public class HotelQueries {
 	/*
 	 * Create invoice for customer. Returns array list with 2 doubles (amenityTotal, roomTotal, grandTotal)
 	 */
-	public List<Double> createInvoice(int cID){
-		List<Double> results = new ArrayList<Double>();
+	public ArrayList<Double> createInvoice(int cID){
+		ArrayList<Double> results = new ArrayList<Double>();
 		ResultSet resultSet = null;
 		double amenityTotal = 0;
 		double roomTotal = 0.0;
@@ -844,9 +844,10 @@ public class HotelQueries {
 				roomTotal += (double) (daysInRoom * roomPrice);
 			}
 			
-			results.set(0, amenityTotal);
-			results.set(1, roomTotal);
-			results.set(2, amenityTotal + roomTotal);
+			results.add(0, amenityTotal);
+			results.add(1, roomTotal);
+			grandTotal = amenityTotal + roomTotal;
+			results.add(2, grandTotal);
 		}
 		catch (SQLException e) {
 			e.printStackTrace();

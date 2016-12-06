@@ -802,27 +802,62 @@ public class HotelManagerDisplay extends JFrame {
         customerEnterPanels.add(customerIDCheckoutTextField);
         billingPanel.add(customerEnterPanels);
 
-        //Room Fields Panel
-        JPanel roomEnterPanels = new JPanel();
-        roomEnterPanels.setLayout(new BoxLayout(roomEnterPanels, BoxLayout.LINE_AXIS));
-
-        //RoomId Label
-        roomIDLabel = new JLabel("Enter Room ID: ");
-        roomEnterPanels.add(roomIDLabel);
-
-        //Room ID textField
-        roomIDCheckoutTextField = new JTextField();
-        roomIDCheckoutTextField.setMaximumSize(new Dimension(50,20));
-        roomEnterPanels.add(roomIDCheckoutTextField);
-        billingPanel.add(roomEnterPanels);
-
         //SearchButton Panel
         JPanel searchButtonPanel = new JPanel();
         searchButtonPanel.setLayout(new BoxLayout(searchButtonPanel, BoxLayout.LINE_AXIS));
 
         //Search Button
         searchButton = new JButton("Search");
+        searchButton.addActionListener(new ActionListener(){
+        		@Override
+        		public void actionPerformed(ActionEvent e){
+        			//pull values and clear text field
+        			String id = customerIDCheckoutTextField.getText();
+        			
+        			//check that a customer Id has been entered  
+        			if(id.isEmpty()){
+        				customerMessageLabel.setText("Customer ID needed");
+            			customerMessageLabel.setForeground(Color.RED);
+            			return;
+        			}
+        			
+        			//parse integer for query
+        			int convertedId = Integer.parseInt(id);
+        			
+        			//create List object to hold calculations
+        			ArrayList<Double> totals;
+        			
+        			//call db query and pull vars
+        			totals = hotelQueries.createInvoice(convertedId);
+        			double amenityTotal = totals.get(0);
+        			double roomTotal = totals.get(1);
+        			double grandTotal = amenityTotal + roomTotal;
+        			
+        			String amenity = String.valueOf(amenityTotal);
+        			
+        			//change labels to show current charges, checking values not null
+        			if(amenityTotal != 0){
+        				amenityPriceTotalLabel.setText(amenity);
+        			}
+        			if(roomTotal != 0){
+        				roomPriceTotalLabel.setText(String.valueOf(roomTotal));
+        			}
+        			//set grand total
+        			totalPriceLabel.setText(String.valueOf(grandTotal));
+        		}
+        });
+        JButton clearButton = new JButton("Clear");
+        clearButton.addActionListener(new ActionListener(){
+        		@Override
+        		public void actionPerformed(ActionEvent e){
+        			//reset values of all prices
+        			amenityPriceTotalLabel.setText("$0.00");
+        			roomPriceTotalLabel.setText("$0.00");
+        			totalPriceLabel.setText("$0.00");
+        		}
+        });
         searchButtonPanel.add(searchButton);
+        searchButtonPanel.add(clearButton);
         billingPanel.add(searchButtonPanel);
 
         //Room Price Panel
@@ -876,7 +911,26 @@ public class HotelManagerDisplay extends JFrame {
         payButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            //TODO
+            	//pull values and clear text field
+    			String id = customerIDCheckoutTextField.getText();
+    			customerIDCheckoutTextField.setText("");
+    			
+    			//check that a customer Id has been entered  
+    			if(id.isEmpty()){
+    				customerMessageLabel.setText("Customer ID needed");
+        			customerMessageLabel.setForeground(Color.RED);
+        			return;
+    			}
+    			
+    			//parse integer for query
+    			int convertedId = Integer.parseInt(id);
+    			
+    			
+            	
+            	//reset values of all prices
+    			amenityPriceTotalLabel.setText("$0.00");
+    			roomPriceTotalLabel.setText("$0.00");
+    			totalPriceLabel.setText("$0.00");
             }
         });
 
