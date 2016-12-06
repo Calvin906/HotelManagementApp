@@ -163,22 +163,19 @@ public class HotelQueries {
 	         // Books a room for a customer
 	         bookRoom = connection.prepareStatement("INSERT INTO occupied (cID, rID) VALUES (?, ?)");
 	         
+
+	         // Selects all customers that have booked (occupied) more than x rooms
+	         occupiedHavingGreaterThan = connection.prepareStatement("select cID, rID as Room, cName as Name, occupiedDate "
+	         		+ "from occupied natural join customer "
+	         		+ "where cID in(select cID from occupied group by cID having count(*) > ?)");
+
+	         // Gets the most recently added customer cID from customer table
+	         // Uses the SQL max aggregation function
+	         getNewestCid = connection.prepareStatement("select max(cID) from customer");
+
 	         // Get all occupied rooms
- //___________________________________________________________________________________________//
-//	         getAllOccupiedRooms = connection.prepareStatement("select cName, rID, cID, occupiedDate "
-//	         		+ "from customer natural join occupied");
-//
-//	         // Selects all customers that have booked (occupied) more than x rooms
-//	         occupiedHavingGreaterThan = connection.prepareStatement("select cID, rID as Room, cName as Name, occupiedDate "
-//	         		+ "from occupied natural join customer "
-//	         		+ "where cID in(select cID from occupied group by cID having count(*) > ?)");
-//
-//	         // Gets the most recently added customer cID from customer table
-//	         // Uses the SQL max aggregation function
-	         //getNewestCid = connection.prepareStatement("select max(cID) from customer");
-
-
-	         getAllOccupiedRooms = connection.prepareStatement("select cName, rID, cID, occupiedDate from customer natural join occupied");
+	         getAllOccupiedRooms = connection.prepareStatement("select cName, rID, cID, occupiedDate "
+	         		+ "from customer natural join occupied");
 	         
 	         // Add amenity
 	         addAmenity = connection.prepareStatement("INSERT INTO ammenities(description, price) VALUES(?,?)");
