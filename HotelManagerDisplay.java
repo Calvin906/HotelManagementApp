@@ -1033,27 +1033,62 @@ public class HotelManagerDisplay extends JFrame {
         customerEnterPanels.add(customerIDCheckoutTextField);
         billingPanel.add(customerEnterPanels);
 
-        //Room Fields Panel
-        JPanel roomEnterPanels = new JPanel();
-        roomEnterPanels.setLayout(new BoxLayout(roomEnterPanels, BoxLayout.LINE_AXIS));
-
-        //RoomId Label
-        roomIDLabel = new JLabel("Enter Room ID: ");
-        roomEnterPanels.add(roomIDLabel);
-
-        //Room ID textField
-        roomIDCheckoutTextField = new JTextField();
-        roomIDCheckoutTextField.setMaximumSize(new Dimension(50,20));
-        roomEnterPanels.add(roomIDCheckoutTextField);
-        billingPanel.add(roomEnterPanels);
-
         //SearchButton Panel
         JPanel searchButtonPanel = new JPanel();
         searchButtonPanel.setLayout(new BoxLayout(searchButtonPanel, BoxLayout.LINE_AXIS));
 
         //Search Button
         searchButton = new JButton("Search");
+        searchButton.addActionListener(new ActionListener(){
+        		@Override
+        		public void actionPerformed(ActionEvent e){
+        			//pull values and clear text field
+        			String id = customerIDCheckoutTextField.getText();
+        			
+        			//check that a customer Id has been entered  
+        			if(id.isEmpty()){
+        				customerMessageLabel.setText("Customer ID needed");
+            			customerMessageLabel.setForeground(Color.RED);
+            			return;
+        			}
+        			
+        			//parse integer for query
+        			int convertedId = Integer.parseInt(id);
+        			
+        			//create List object to hold calculations
+        			ArrayList<Double> totals;
+        			
+        			//call db query and pull vars
+        			totals = hotelQueries.createInvoice(convertedId);
+        			double amenityTotal = totals.get(0);
+        			double roomTotal = totals.get(1);
+        			double grandTotal = amenityTotal + roomTotal;
+        			
+        			String amenity = String.valueOf(amenityTotal);
+        			
+        			//change labels to show current charges, checking values not null
+        			if(amenityTotal != 0){
+        				amenityPriceTotalLabel.setText(amenity);
+        			}
+        			if(roomTotal != 0){
+        				roomPriceTotalLabel.setText(String.valueOf(roomTotal));
+        			}
+        			//set grand total
+        			totalPriceLabel.setText(String.valueOf(grandTotal));
+        		}
+        });
+        JButton clearButton = new JButton("Clear");
+        clearButton.addActionListener(new ActionListener(){
+        		@Override
+        		public void actionPerformed(ActionEvent e){
+        			//reset values of all prices
+        			amenityPriceTotalLabel.setText("$0.00");
+        			roomPriceTotalLabel.setText("$0.00");
+        			totalPriceLabel.setText("$0.00");
+        		}
+        });
         searchButtonPanel.add(searchButton);
+        searchButtonPanel.add(clearButton);
         billingPanel.add(searchButtonPanel);
 
         //Room Price Panel
@@ -1107,7 +1142,26 @@ public class HotelManagerDisplay extends JFrame {
         payButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-            //TODO
+            	//pull values and clear text field
+    			String id = customerIDCheckoutTextField.getText();
+    			customerIDCheckoutTextField.setText("");
+    			
+    			//check that a customer Id has been entered  
+    			if(id.isEmpty()){
+    				customerMessageLabel.setText("Customer ID needed");
+        			customerMessageLabel.setForeground(Color.RED);
+        			return;
+    			}
+    			
+    			//parse integer for query
+    			int convertedId = Integer.parseInt(id);
+    			
+    			
+            	
+            	//reset values of all prices
+    			amenityPriceTotalLabel.setText("$0.00");
+    			roomPriceTotalLabel.setText("$0.00");
+    			totalPriceLabel.setText("$0.00");
             }
         });
 
@@ -1159,7 +1213,38 @@ public class HotelManagerDisplay extends JFrame {
         addAmenitiesButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //TODO
+                String amenity = itemAmenityTextField.getText();
+                String custId = ammenCustomerIDTextField.getText();
+                String amount = amountAmenityTextField.getText();
+                
+                //clear text fields
+                itemAmenityTextField.setText("");
+                ammenCustomerIDTextField.setText("");
+                amountAmenityTextField.setText("");
+                
+                //check that all fields have been set, notify user if any are empty
+                if(amenity.isEmpty() || custId.isEmpty() || amount.isEmpty()){
+                	customerMessageLabel.setText("AMENITY ID, CUSTOMER ID, AND AMOUNT MANDATORY");
+        			customerMessageLabel.setForeground(Color.RED);
+        			return;
+                }
+                //add amenity charges to customer
+                else{
+                	//parse int values from text fields
+                	int convertedAmenityId = Integer.parseInt(amenity);
+                	int convertedCustomerId = Integer.parseInt(custId);
+                	int convertedAmount = Integer.parseInt(amount);
+                	try{
+                	hotelQueries.orderAmenity(convertedAmenityId, convertedCustomerId, convertedAmount);
+                	customerMessageLabel.setText("Order placed successfully");
+        			customerMessageLabel.setForeground(Color.RED);
+                }		
+             	 catch (IllegalStateException e1) {
+             			customerMessageLabel.setText("Database Error");
+             			customerMessageLabel.setForeground(Color.RED);
+     					e1.printStackTrace();
+     				}
+                }
             }
         });
 
@@ -1223,8 +1308,10 @@ public class HotelManagerDisplay extends JFrame {
         addItemsPanel.setLayout(new BoxLayout(addItemsPanel, BoxLayout.LINE_AXIS));
         addItemsPanel.add(editAmenityItemLabel);
         addItemsPanel.add(editAmenityItemTextField);
+        amenitiesPanel.add(new JLabel(""));
         addItemsPanel.add(itemNameAmenityLabel);
         addItemsPanel.add(addItemAmenityTextField);
+        amenitiesPanel.add(new JLabel(""));
         addItemsPanel.add(itemPriceAmenityLabel);
         addItemsPanel.add(addPriceAmenityTextField);
 
@@ -1252,7 +1339,7 @@ public class HotelManagerDisplay extends JFrame {
 	            		int aID = Integer.parseInt(amenityId);
 	            		ammenityTableModel.setQuerySelectAmenityById(aID);
 					} catch(NumberFormatException e1){
-	        			customerMessageLabel.setText("Item # MUST BE AN INTEGER");
+	        			customerMessageLabel.setText("ITEM # MUST BE AN INTEGER");
 	        			customerMessageLabel.setForeground(Color.RED);
 	        			} catch (IllegalStateException e1) {
 						e1.printStackTrace();
@@ -1261,19 +1348,12 @@ public class HotelManagerDisplay extends JFrame {
 					}
             	}
             	//no id given, check other text field to match name
-            	else
+            	else if(!description.isEmpty())
             	{
             		try
             		{
-            			// Check that user entered a name/description
-            			if(!description.isEmpty()){
             			// Call method that will execute query
             			ammenityTableModel.setQuerySelectAmenityByName(description);
-            			}
-            			else{
-            				ammenityTableModel.setQueryGetAllAmenities();
-            			}
-            			
             		}
             		 catch (IllegalStateException e1) {
             			customerMessageLabel.setText("Database Error");
@@ -1285,6 +1365,18 @@ public class HotelManagerDisplay extends JFrame {
 						e1.printStackTrace();
 					}
             	}
+            	//id or name not given for search, return all amenities
+            	else{
+    				try {
+						ammenityTableModel.setQueryGetAllAmenities();
+					}
+					catch (IllegalStateException e1) {
+						e1.printStackTrace();
+					}
+					catch (SQLException e1) {
+						e1.printStackTrace();
+					}
+    			}
             }
         });
 
@@ -1293,21 +1385,30 @@ public class HotelManagerDisplay extends JFrame {
         createAmenityButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+            	
+            	//pull values
             	String name = addItemAmenityTextField.getText();
             	String price = addPriceAmenityTextField.getText();
-            	double convertedPrice = Double.parseDouble(price);
-            	
-            	// Add amenity to DB
-            	Integer id = hotelQueries.addAmenity(name, convertedPrice);
-            	
-            	editAmenityItemTextField.setText(id.toString());
-            	
-            	customerMessageLabel.setText("SUCCESS. aID# " + id.toString());
+            	double convertedPrice;
             	
             	// Clear text fields on form
             	editAmenityItemTextField.setText("");
             	addPriceAmenityTextField.setText("");
             	addItemAmenityTextField.setText("");
+            	
+            	//check that both name and price are set before creating amenity
+            	if(name.isEmpty() || price.isEmpty()){
+            		customerMessageLabel.setText("NAME AND PRICE MUST BE SET TO CREATE");
+        			customerMessageLabel.setForeground(Color.RED);
+        			return;
+            	}
+            	else{
+            	//convert string price into double
+             convertedPrice = Double.parseDouble(price);
+             
+            	// Add amenity to DB
+            	hotelQueries.addAmenity(name, convertedPrice);            	
+            	customerMessageLabel.setText("SUCCESS");
             	
             	/*
             	 * Update the amenity table in the GUI to reflect model change
@@ -1315,11 +1416,16 @@ public class HotelManagerDisplay extends JFrame {
             	
             	try {
             		ammenityTableModel.setQueryGetAllAmenities();
-				} catch (IllegalStateException e1) {
+				} catch(NumberFormatException e1){
+        			customerMessageLabel.setText("Item # MUST BE AN INTEGER");
+        			customerMessageLabel.setForeground(Color.RED);
+        			}
+            		catch (IllegalStateException e1) {
 					e1.printStackTrace();
 				} catch (SQLException e1) {
 					e1.printStackTrace();
 				}
+            	}
             }
         });
 
@@ -1339,7 +1445,7 @@ public class HotelManagerDisplay extends JFrame {
                 
                 //check that an Id has been input into field
                 if(id.isEmpty()){
-                	customerMessageLabel.setText("Amenity Id needed to update");
+                	customerMessageLabel.setText("AMENITY ID NEEDED TO UPDATE");
                 	return;
                 }
                  
@@ -1416,6 +1522,10 @@ public class HotelManagerDisplay extends JFrame {
             	try{
             		//pull number from text field, call query in table model to delete
                 String amenityToDelete = editAmenityItemTextField.getText();
+                if(amenityToDelete.isEmpty()){
+                    customerMessageLabel.setText("AMENITY ID NEEDED TO DELETE.");
+                    return;
+                }
                 int aID = Integer.parseInt(amenityToDelete);
                 
                 //clear text fields
@@ -1423,7 +1533,9 @@ public class HotelManagerDisplay extends JFrame {
 				addItemAmenityTextField.setText("");
 				addPriceAmenityTextField.setText("");
                 
+				//call query to delete amenity, notify user of deletion
                 ammenityTableModel.setQueryDeleteAmenity(aID);
+                customerMessageLabel.setText("Amenity Successfully Deleted.");
             	}
                 catch(NumberFormatException e1){
         			customerMessageLabel.setText("Item # MUST BE AN INTEGER");
@@ -1439,11 +1551,21 @@ public class HotelManagerDisplay extends JFrame {
         			customerMessageLabel.setForeground(Color.RED);
 					e1.printStackTrace();
             	}
-            		//notify user of successful deletion, clear all text fields
-                customerMessageLabel.setText("Amenity Successfully Deleted.");
-                editAmenityItemTextField.setText("");
-                addItemAmenityTextField.setText("");
-                addPriceAmenityTextField.setText("");
+            	
+            	
+            	/*
+            	 * Update ammenity table in the GUI to
+            	 * reflect the model update
+            	 */
+            	
+            	try {
+            		ammenityTableModel.setQueryGetAllAmenities();
+				} catch (IllegalStateException e1) {
+					e1.printStackTrace();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+            	
             }            
         });
 

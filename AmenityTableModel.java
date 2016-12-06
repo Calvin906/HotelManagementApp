@@ -288,9 +288,10 @@ public class AmenityTableModel extends AbstractTableModel
       throws SQLException, IllegalStateException 
    {
       // ensure database connection is available
-      if (!connectedToDatabase) 
+      if (!connectedToDatabase) {
          throw new IllegalStateException("Not Connected to Database");
-         hq.deleteAmenity(aID);
+      }
+      hq.deleteAmenity(aID);
             
       // notify JTable that model has changed
       fireTableStructureChanged();

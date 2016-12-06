@@ -5,10 +5,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.ArrayList;
-import java.util.Date;
+
 /**
  *
  * CS157A Project
@@ -186,7 +187,7 @@ public class HotelQueries {
 	         selectAmenityById = connection.prepareStatement("SELECT * FROM ammenities WHERE aID = ?");
 	         
 	         //selectt amenity by name
-	         selectAmenityByName = connection.prepareStatement("SELECT * FROM ammenities WHERE description = ?");
+	         selectAmenityByName = connection.prepareStatement("SELECT * FROM ammenities WHERE description like ?");
 	         
 	         // Update Amenity name
 	         updateAmenityDescriptionPrice = 
@@ -205,7 +206,7 @@ public class HotelQueries {
 	        		 		+ "WHERE aID = ?");
 	         
 	         // Delete amenity
-	         deleteAmenity = connection.prepareStatement("DELETE FROM ammenities WHERE aID = ?)");
+	         deleteAmenity = connection.prepareStatement("DELETE FROM ammenities WHERE aID = ?");
 	         
 	         // Order amenity
 	         orderAmenity = connection.prepareStatement("INSERT INTO ammenity_orders(aID, cID, amount) VALUES(?,?,?)");
@@ -837,7 +838,7 @@ public class HotelQueries {
 	/*
 	 * Add amenity to database
 	 */
-	public int addAmenity(String desc, double price){
+	public void addAmenity(String desc, double price){
 		int result = 0;
 		try{
 			//set parameters, then execute query
@@ -847,17 +848,10 @@ public class HotelQueries {
 			//execute query
 			addAmenity.executeUpdate();
 			
-			//pull new amenity Id to
-			ResultSet rs = addAmenity.getGeneratedKeys();
-			if(rs.next())
-			{
-				result = rs.getInt(1);
-			}
 		}
 		catch(SQLException sqlException){
 			sqlException.printStackTrace();
 		}
-		return result;
 	}
 
 	/*
@@ -898,7 +892,7 @@ public class HotelQueries {
 		   try 
 		   {
 			   //set parameters
-			   selectAmenityById.setString(1, name);
+			   selectAmenityByName.setString(1, "%" + name + "%");
 			  		    	  
 		       // executeQuery
 			   resultSet = selectAmenityByName.executeQuery(); 
@@ -1018,8 +1012,8 @@ public class HotelQueries {
 	/*
 	 * Create invoice for customer. Returns array list with 2 doubles (amenityTotal, roomTotal, grandTotal)
 	 */
-	public List<Double> createInvoice(int cID){
-		List<Double> results = new ArrayList<Double>();
+	public ArrayList<Double> createInvoice(int cID){
+		ArrayList<Double> results = new ArrayList<Double>();
 		ResultSet resultSet = null;
 		double amenityTotal = 0;
 		double roomTotal = 0.0;
@@ -1027,8 +1021,8 @@ public class HotelQueries {
 		int daysInRoom = 0;
 		double roomPrice = 0.0;
 		Timestamp stamp;
-		Date currentDate = new Date();
-		Date checkInDate;
+		LocalDate today = LocalDate.now();
+		LocalDate checkInDate;
 		
 		try {
 			//set customer ID as parameter 1 and 2
@@ -1046,42 +1040,27 @@ public class HotelQueries {
 				//pull room price
 				roomPrice = resultSet.getDouble("price");
 				
-				//pull timestamp, convert to Date
+				//pull timestamp, convert to LocalDate
 				stamp = resultSet.getTimestamp("occupiedDate");
-				checkInDate = new Date(stamp.getTime());
+				checkInDate = stamp.toLocalDateTime().toLocalDate();
 				
-				//call getDateDiff to calculate number of days stayed in room
-				daysInRoom = (int) getDateDiff(checkInDate, currentDate, TimeUnit.DAYS);
+				//calculate number of days stayed in room
+				daysInRoom = (int) checkInDate.until(today, ChronoUnit.DAYS);
 				
 				//update room total using room price and days stayed
 				roomTotal += (double) (daysInRoom * roomPrice);
 			}
 			
-			results.set(0, amenityTotal);
-			results.set(1, roomTotal);
-			results.set(2, amenityTotal + roomTotal);
+			results.add(0, amenityTotal);
+			results.add(1, roomTotal);
+			grandTotal = amenityTotal + roomTotal;
+			results.add(2, grandTotal);
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
 		}
 		
 		return results;
-	}
-	
-	/*
-	 * Helper method to calculate days between
-	 */
-	
-	/*
-	 * Get a diff between two dates
-	 * @param date1 the oldest date
-	 * @param date2 the newest date
-	 * @param timeUnit the unit in which you want the diff
-	 * @return the diff value, in the provided unit
-	 */
-	public static long getDateDiff(Date date1, Date date2, TimeUnit timeUnit) {
-	    long diffInMillies = date2.getTime() - date1.getTime();
-	    return timeUnit.convert(diffInMillies,TimeUnit.MILLISECONDS);
 	}
 	
 	// close the database connection
